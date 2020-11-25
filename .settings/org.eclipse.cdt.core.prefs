@@ -1,0 +1,6 @@
+eclipse.preferences.version=1
+environment/project/cdt.managedbuild.toolchain.gnu.cross.base.1805145749/PATH/delimiter=\:
+environment/project/cdt.managedbuild.toolchain.gnu.cross.base.1805145749/PATH/operation=replace
+environment/project/cdt.managedbuild.toolchain.gnu.cross.base.1805145749/PATH/value=/opt/st/stm32cubeide_1.3.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.linux64_1.0.0.201904181610/tools/bin\:/opt/st/stm32cubeide_1.3.0/plugins/com.st.stm32cube.ide.mcu.externaltools.make.linux64_1.1.0.201910081157/tools/bin\:/home/hari/.local/bin\:/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/usr/games\:/usr/local/games\:/snap/bin
+environment/project/cdt.managedbuild.toolchain.gnu.cross.base.1805145749/append=true
+environment/project/cdt.managedbuild.toolchain.gnu.cross.base.1805145749/appendContributed=true
