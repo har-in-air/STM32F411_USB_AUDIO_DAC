@@ -10,18 +10,12 @@ uint32_t GPIO_PIN[LEDn] = {
     LED4_PIN
 };
 
-GPIO_TypeDef* GPIO_PORT[LEDn] = {
-	LED1_GPIO_PORT,
-    LED2_GPIO_PORT,
-    LED3_GPIO_PORT,
-    LED4_GPIO_PORT
-};
 
-GPIO_TypeDef* BUTTON_PORT[BUTTONn] = {WAKEUP_BUTTON_GPIO_PORT };
+GPIO_TypeDef* BUTTON_PORT[BUTTONn] = {USER_BUTTON_GPIO_PORT };
 
-const uint16_t BUTTON_PIN[BUTTONn] = {WAKEUP_BUTTON_PIN };
+const uint16_t BUTTON_PIN[BUTTONn] = {USER_BUTTON_PIN };
 
-const uint16_t BUTTON_IRQn[BUTTONn] = {WAKEUP_BUTTON_EXTI_IRQn };
+const uint16_t BUTTON_IRQn[BUTTONn] = {USER_BUTTON_EXTI_IRQn };
 
 
 void BSP_LED_Init(Led_TypeDef Led) {
@@ -33,27 +27,12 @@ void BSP_LED_Init(Led_TypeDef Led) {
     gpio_init_structure.Pull  = GPIO_PULLUP;
     gpio_init_structure.Speed = GPIO_SPEED_HIGH;
 
-    switch(Led)    {
-    case LED1 :
-      LED1_GPIO_CLK_ENABLE();
-      break;
-    case LED2 :
-      LED2_GPIO_CLK_ENABLE();
-      break;
-    case LED3 :
-      LED3_GPIO_CLK_ENABLE();
-      break;
-    case LED4 :
-      LED4_GPIO_CLK_ENABLE();
-      break;
-    default :
-      break;
-    } 
+    LED_GPIO_CLK_ENABLE();
 
-    HAL_GPIO_Init(GPIO_PORT[Led], &gpio_init_structure);
+    HAL_GPIO_Init(LED_GPIO_PORT, &gpio_init_structure);
 
-    /* By default, turn off LED by setting a high level on corresponding GPIO */
-    HAL_GPIO_WritePin(GPIO_PORT[Led], GPIO_PIN[Led], GPIO_PIN_SET);
+    // turn off LED by setting a high level on pin
+    HAL_GPIO_WritePin(LED_GPIO_PORT, GPIO_PIN[Led], GPIO_PIN_SET);
   } 
 }
 
@@ -62,33 +41,30 @@ void BSP_LED_DeInit(Led_TypeDef Led){
   GPIO_InitTypeDef  gpio_init_structure;
 
   if (Led <= LED4)  {
-    /* DeInit the GPIO_LED pin */
     gpio_init_structure.Pin = GPIO_PIN[Led];
-
-    /* Turn off LED */
-    HAL_GPIO_WritePin(GPIO_PORT[Led], GPIO_PIN[Led], GPIO_PIN_SET);
-    HAL_GPIO_DeInit(GPIO_PORT[Led], gpio_init_structure.Pin);
-  }
+    HAL_GPIO_WritePin(LED_GPIO_PORT, GPIO_PIN[Led], GPIO_PIN_SET);
+    HAL_GPIO_DeInit(LED_GPIO_PORT, gpio_init_structure.Pin);
+    }
 }
 
 
 void BSP_LED_On(Led_TypeDef Led) {
   if (Led <= LED4)  {
-     HAL_GPIO_WritePin(GPIO_PORT[Led], GPIO_PIN[Led], GPIO_PIN_RESET);
+     HAL_GPIO_WritePin(LED_GPIO_PORT, GPIO_PIN[Led], GPIO_PIN_RESET);
   }
 }
 
 
 void BSP_LED_Off(Led_TypeDef Led){
   if (Led <= LED4)  {
-    HAL_GPIO_WritePin(GPIO_PORT[Led], GPIO_PIN[Led], GPIO_PIN_SET);
+    HAL_GPIO_WritePin(LED_GPIO_PORT, GPIO_PIN[Led], GPIO_PIN_SET);
   }
 }
 
 
 void BSP_LED_Toggle(Led_TypeDef Led){
   if (Led <= LED4)  {
-     HAL_GPIO_TogglePin(GPIO_PORT[Led], GPIO_PIN[Led]);
+     HAL_GPIO_TogglePin(LED_GPIO_PORT, GPIO_PIN[Led]);
   }
 }
 
@@ -96,11 +72,9 @@ void BSP_LED_Toggle(Led_TypeDef Led){
 void BSP_PB_Init(Button_TypeDef Button, ButtonMode_TypeDef Button_Mode) {
   GPIO_InitTypeDef gpio_init_structure;
 
-  /* Enable the BUTTON clock */
   BUTTON_GPIO_CLK_ENABLE();
 
-  if(Button_Mode == BUTTON_MODE_GPIO)  {
-    /* Configure Button pin as input */
+  if (Button_Mode == BUTTON_MODE_GPIO)  {
     gpio_init_structure.Pin = BUTTON_PIN[Button];
     gpio_init_structure.Mode = GPIO_MODE_INPUT;
     gpio_init_structure.Pull = GPIO_NOPULL;
@@ -108,8 +82,7 @@ void BSP_PB_Init(Button_TypeDef Button, ButtonMode_TypeDef Button_Mode) {
     HAL_GPIO_Init(BUTTON_PORT[Button], &gpio_init_structure);
   }
 
-  if(Button_Mode == BUTTON_MODE_EXTI)  {
-    /* Configure Button pin as input with External interrupt */
+  if (Button_Mode == BUTTON_MODE_EXTI)  {
     gpio_init_structure.Pin = BUTTON_PIN[Button];
     gpio_init_structure.Pull = GPIO_NOPULL;
     gpio_init_structure.Speed = GPIO_SPEED_FAST;
@@ -118,7 +91,7 @@ void BSP_PB_Init(Button_TypeDef Button, ButtonMode_TypeDef Button_Mode) {
 
     HAL_GPIO_Init(BUTTON_PORT[Button], &gpio_init_structure);
 
-    /* Enable and set Button EXTI Interrupt to the lowest priority */
+    // Enable and set Button EXTI Interrupt to the lowest priority
     HAL_NVIC_SetPriority((IRQn_Type)(BUTTON_IRQn[Button]), 0x0F, 0x00);
     HAL_NVIC_EnableIRQ((IRQn_Type)(BUTTON_IRQn[Button]));
   }
