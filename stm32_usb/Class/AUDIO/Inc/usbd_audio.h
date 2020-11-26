@@ -135,7 +135,7 @@
 // Number of sub-packets in the audio transfer buffer.
 // You can modify this value but always make sure that it is an even number higher than 3.
 // Larger values will increase latency since we start playing only when the buffer is half-full
-#define AUDIO_OUT_PACKET_NUM                          24U
+#define AUDIO_OUT_PACKET_NUM                          8U
 
 // Total size of the audio transfer buffer
 #define AUDIO_TOTAL_BUF_SIZE                          ((uint16_t)((USBD_AUDIO_FREQ_MAX / 1000U + 1) * 2U * 3U * AUDIO_OUT_PACKET_NUM))
