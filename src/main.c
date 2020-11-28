@@ -57,6 +57,7 @@ int main(void) {
 
     HAL_Delay(100);
 #ifdef DEBUG_FEEDBACK_ENDPOINT
+    // see USBD_AUDIO_SOF() in usbd_audio.c
 	if (BtnPressed) {
 		BtnPressed = 0;
 		printMsg("DbgOptimalWritableSamples = %d\r\nDbgSafeZoneWritableSamples = %d\r\n", AUDIO_TOTAL_BUF_SIZE/(2*6), AUDIO_BUF_SAFEZONE_SAMPLES);
