@@ -11,12 +11,7 @@ uint32_t GPIO_PIN[LEDn] = {
 };
 
 
-GPIO_TypeDef* BUTTON_PORT[BUTTONn] = {USER_BUTTON_GPIO_PORT };
-
-const uint16_t BUTTON_PIN[BUTTONn] = {USER_BUTTON_PIN };
-
-const uint16_t BUTTON_IRQn[BUTTONn] = {USER_BUTTON_EXTI_IRQn };
-
+volatile uint32_t BtnPressed = 0;
 
 void BSP_LED_Init(Led_TypeDef Led) {
   GPIO_InitTypeDef  gpio_init_structure;
@@ -69,47 +64,32 @@ void BSP_LED_Toggle(Led_TypeDef Led){
 }
 
 
-void BSP_PB_Init(Button_TypeDef Button, ButtonMode_TypeDef Button_Mode) {
-  GPIO_InitTypeDef gpio_init_structure;
+void BSP_PB_Init(void) {
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
 
-  BUTTON_GPIO_CLK_ENABLE();
+  __HAL_RCC_GPIOA_CLK_ENABLE();
 
-  if (Button_Mode == BUTTON_MODE_GPIO)  {
-    gpio_init_structure.Pin = BUTTON_PIN[Button];
-    gpio_init_structure.Mode = GPIO_MODE_INPUT;
-    gpio_init_structure.Pull = GPIO_NOPULL;
-    gpio_init_structure.Speed = GPIO_SPEED_FAST;
-    HAL_GPIO_Init(BUTTON_PORT[Button], &gpio_init_structure);
-  }
+  /*Configure GPIO pin : PA1 */
+  GPIO_InitStruct.Pin = GPIO_PIN_1;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  if (Button_Mode == BUTTON_MODE_EXTI)  {
-    gpio_init_structure.Pin = BUTTON_PIN[Button];
-    gpio_init_structure.Pull = GPIO_NOPULL;
-    gpio_init_structure.Speed = GPIO_SPEED_FAST;
-
-    gpio_init_structure.Mode = GPIO_MODE_IT_RISING;
-
-    HAL_GPIO_Init(BUTTON_PORT[Button], &gpio_init_structure);
-
-    // Enable and set Button EXTI Interrupt to the lowest priority
-    HAL_NVIC_SetPriority((IRQn_Type)(BUTTON_IRQn[Button]), 0x0F, 0x00);
-    HAL_NVIC_EnableIRQ((IRQn_Type)(BUTTON_IRQn[Button]));
-  }
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI1_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI1_IRQn);
 }
 
 
-void BSP_PB_DeInit(Button_TypeDef Button) {
-    GPIO_InitTypeDef gpio_init_structure;
 
-    gpio_init_structure.Pin = BUTTON_PIN[Button];
-    HAL_NVIC_DisableIRQ((IRQn_Type)(BUTTON_IRQn[Button]));
-    HAL_GPIO_DeInit(BUTTON_PORT[Button], gpio_init_structure.Pin);
+uint32_t BSP_PB_GetState(void) {
+  return HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_1);
 }
 
 
-uint32_t BSP_PB_GetState(Button_TypeDef Button) {
-  return HAL_GPIO_ReadPin(BUTTON_PORT[Button], BUTTON_PIN[Button]);
-}
-
-
+void HAL_GPIO_EXTI_Callback(uint16_t gpioPin) {
+	if (gpioPin == GPIO_PIN_1) {
+		BtnPressed = 1;
+		}
+	}
 

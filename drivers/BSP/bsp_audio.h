@@ -19,7 +19,6 @@ typedef struct I2S_CLK_CONFIG_ {
 	uint32_t nominal_fdbk;
 } I2S_CLK_CONFIG;
 
-extern const I2S_CLK_CONFIG I2S_Clk_Config16[];
 extern const I2S_CLK_CONFIG I2S_Clk_Config24[];
 
 #define BSP_AUDIO_OUT_CIRCULARMODE      ((uint32_t)0x00000001) /* BUFFER CIRCULAR MODE */

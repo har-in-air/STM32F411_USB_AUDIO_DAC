@@ -16,6 +16,7 @@ int main(void) {
   MX_USART1_UART_Init();
   printMsg("\r\nUSB Audio I2S Bridge\r\n");
 
+  BSP_PB_Init();
   BSP_LED_Init(LED_YELLOW);
   BSP_LED_Init(LED_GREEN);
   BSP_LED_Init(LED_RED);

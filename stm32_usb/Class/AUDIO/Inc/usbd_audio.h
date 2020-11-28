@@ -28,7 +28,7 @@
 
 
 #ifndef USBD_AUDIO_FREQ_DEFAULT
-#define USBD_AUDIO_FREQ_DEFAULT                       44100U
+#define USBD_AUDIO_FREQ_DEFAULT                       96000U
 #endif
 
 #ifndef USBD_AUDIO_FREQ_MAX
@@ -143,7 +143,7 @@
 
 // The minimum distance between rd_ptr and wr_ptr to prevent overwriting unplayed buffer
 
-#define AUDIO_BUF_SAFEZONE                            ((uint16_t)((USBD_AUDIO_FREQ_MAX / 1000U + 1) * 2U * 4U))
+#define AUDIO_BUF_SAFEZONE_SAMPLES                    ((USBD_AUDIO_FREQ_MAX / 1000U) + 1)
 
     /* Audio Commands enumeration */
 typedef enum

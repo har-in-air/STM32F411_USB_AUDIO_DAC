@@ -27,7 +27,7 @@
   *             - No volume control
   *             - Mute/Unmute capability
   *             - Asynchronous Endpoints
-  *             - Endpoint for Sampling frequency Feedback 10.14 3bytes
+  *             - Endpoint for Sampling frequency DbgFeedbackHistory 10.14 3bytes
   ******************************************************************************
   */
 
@@ -50,8 +50,8 @@
 
 #define AUDIO_FB_DEFAULT 0x1800ED70 // I2S_Clk_Config24[2].nominal_fdbk (96kHz, 24bit, USE_MCLK_OUT false)
 
-// Feedback is limited to +/- 1kHz
-#define AUDIO_FB_DELTA (uint32_t)(1 << 22)
+// DbgFeedbackHistory is limited to +/- 1kHz
+#define  AUDIO_FB_DELTA_MAX (uint32_t)(1 << 22)
 
 static uint8_t USBD_AUDIO_Init(USBD_HandleTypeDef* pdev, uint8_t cfgidx);
 static uint8_t USBD_AUDIO_DeInit(USBD_HandleTypeDef* pdev, uint8_t cfgidx);
@@ -281,8 +281,7 @@ volatile uint32_t all_ready = 0;
 
 volatile uint32_t fb_nom = AUDIO_FB_DEFAULT;
 volatile uint32_t fb_value = AUDIO_FB_DEFAULT;
-volatile uint32_t audio_buf_writable_size_last = AUDIO_TOTAL_BUF_SIZE / 2U;
-volatile int32_t fb_raw = AUDIO_FB_DEFAULT;
+volatile uint32_t audio_buf_writable_samples_last = AUDIO_TOTAL_BUF_SIZE /(2*6);
 
 volatile uint8_t fb_data[3] = {
     (uint8_t)((AUDIO_FB_DEFAULT >> 8) & 0x000000FF),
@@ -532,6 +531,17 @@ static uint8_t USBD_AUDIO_DataIn(USBD_HandleTypeDef* pdev,
   return USBD_OK;
 }
 
+
+#ifdef DEBUG_FEEDBACK_ENDPOINT
+static volatile uint32_t  DbgMinWritableSamples = 99999;
+static volatile uint32_t  DbgMaxWritableSamples = 0;
+static volatile uint32_t  DbgSofHistory[256] = {0};
+static volatile uint32_t  DbgWritableSampleHistory[256] = {0};
+static volatile float     DbgFeedbackHistory[256] = {0};
+static volatile uint8_t   DbgIndex = 0; // rollover every 256 entries
+static volatile uint32_t  DbgSofCounter = 0;
+#endif
+
 /**
   * @brief  USBD_AUDIO_SOF
   *         handle SOF event
@@ -542,26 +552,22 @@ static uint8_t USBD_AUDIO_SOF(USBD_HandleTypeDef* pdev)
 {
   USBD_AUDIO_HandleTypeDef* haudio;
   haudio = (USBD_AUDIO_HandleTypeDef*)pdev->pClassData;
-
-  // 1. Must be static so that the values are kept when the function is
-  //    again called.
-  // 2. Must be volatile so that it will not be optimized out by the compiler.
   static volatile uint32_t sof_count = 0;
 
   /* Do stuff only when playing */
   if (haudio->rd_enable == 1U && all_ready == 1U) {
-    /* Remaining writable buffer size */
-    uint32_t audio_buf_writable_size;
-
-    /* Update audio read pointer */
+#ifdef DEBUG_FEEDBACK_ENDPOINT
+	DbgSofCounter++;
+#endif
+	// Update audio read pointer
     haudio->rd_ptr = AUDIO_TOTAL_BUF_SIZE - BSP_AUDIO_OUT_GetRemainingDataSize();
 
-    /* Calculate remaining writable buffer size */
-      audio_buf_writable_size = haudio->rd_ptr < haudio->wr_ptr ?
-    		  haudio->rd_ptr + AUDIO_TOTAL_BUF_SIZE - haudio->wr_ptr : haudio->rd_ptr - haudio->wr_ptr;
+    // Calculate remaining writable buffer size
+    uint32_t audio_buf_writable_samples = haudio->rd_ptr < haudio->wr_ptr ?
+    		  (haudio->rd_ptr + AUDIO_TOTAL_BUF_SIZE - haudio->wr_ptr)/6 : (haudio->rd_ptr - haudio->wr_ptr)/6;
 
     // Monitor remaining writable buffer size with LED
-    if (audio_buf_writable_size < AUDIO_BUF_SAFEZONE) {
+    if (audio_buf_writable_samples < AUDIO_BUF_SAFEZONE_SAMPLES) {
     	BSP_LED_On(LED_RED);
     	}
     else {
@@ -571,39 +577,55 @@ static uint8_t USBD_AUDIO_SOF(USBD_HandleTypeDef* pdev)
     sof_count += 1;
 
     if (sof_count == 1U) {
-      sof_count = 0;
-      /* Calculate feedback value based on the change of writable buffer size */
-      /* v2 */
-      int32_t audio_buf_writable_size_dev_from_nom;
-      audio_buf_writable_size_dev_from_nom = audio_buf_writable_size - (AUDIO_TOTAL_BUF_SIZE >> 1);
-      // fb_value += audio_buf_writable_size_dev_from_nom * 1352;
-      fb_value += audio_buf_writable_size_dev_from_nom * audio_buf_writable_size_dev_from_nom / 912673 * 128 * audio_buf_writable_size_dev_from_nom;
-      /* v1 */
-      // int32_t audio_buf_writable_size_change;
-      // audio_buf_writable_size_change = audio_buf_writable_size - audio_buf_writable_size_last;
-      // fb_raw += audio_buf_writable_size_change * 0x1000;
-      // fb_value = (uint32_t)fb_raw;
+		sof_count = 0;
+		// we start transmitting to I2S DAC when the audio buffer is half full, so the optimal
+		// remaining writable size is (AUDIO_TOTAL_BUF_SIZE/2)/6 samples
+		// Calculate feedback value based on the deviation from optimal
+		int32_t audio_buf_writable_dev_from_nom_samples = audio_buf_writable_samples - AUDIO_TOTAL_BUF_SIZE/(2*6);
+		fb_value += audio_buf_writable_dev_from_nom_samples * 384;
+		// Clamp feedback value to nominal value +/- 1kHz
+		if (fb_value > fb_nom +  AUDIO_FB_DELTA_MAX) {
+			fb_value = fb_nom +  AUDIO_FB_DELTA_MAX;
+			}
+		else
+		if (fb_value < fb_nom -  AUDIO_FB_DELTA_MAX) {
+			fb_value = fb_nom -  AUDIO_FB_DELTA_MAX;
+			}
 
-      // Update last writable buffer size
-      audio_buf_writable_size_last = audio_buf_writable_size;
+		#ifdef DEBUG_FEEDBACK_ENDPOINT
+		if (audio_buf_writable_samples != audio_buf_writable_samples_last) {
+			if (audio_buf_writable_samples > DbgMaxWritableSamples) DbgMaxWritableSamples = audio_buf_writable_samples;
+			if (audio_buf_writable_samples < DbgMinWritableSamples) DbgMinWritableSamples = audio_buf_writable_samples;
+			DbgWritableSampleHistory[DbgIndex] = audio_buf_writable_samples;
+			DbgFeedbackHistory[DbgIndex] = (float)(fb_value >> 8)/(float)(1<<14);
+			DbgSofHistory[DbgIndex] = DbgSofCounter;
+			DbgIndex++; // uint8_t, so only record last 256 entries
+			}
 
-      // Clamp feedback value
-      if (fb_value > fb_nom + AUDIO_FB_DELTA) {
-    	  fb_value = fb_raw = fb_nom + AUDIO_FB_DELTA;
-      	  }
-      else
-      if (fb_value < fb_nom - AUDIO_FB_DELTA) {
-    	  fb_value = fb_raw = fb_nom - AUDIO_FB_DELTA;
-      	  }
+		if (BtnPressed) {
+			printMsg("DbgOptimalWritableSamples = %d\r\nDbgSafeZoneWritableSamples = %d\r\n", AUDIO_TOTAL_BUF_SIZE/(2*6), AUDIO_BUF_SAFEZONE_SAMPLES);
+			printMsg("DbgMaxWritableSamples = %d\r\nDbgMinWritableSamples = %d\r\n", DbgMaxWritableSamples, DbgMinWritableSamples);
+			BtnPressed = 0;
+			int count = 256;
+			while (count--){
+				// print oldest to newest
+				//printMsg("%d %d %f\r\n", DbgSofHistory[DbgIndex], DbgWritableSampleHistory[DbgIndex], DbgFeedbackHistory[DbgIndex]);
+				DbgIndex++;
+				}
+			}
+		#endif
 
-      // Set 10.14 format feedback data
-      // Order of 3 bytes in feedback packet: { LO byte, MID byte, HI byte }
-      // 48.0 (dec) => 300000(hex, 8.16) => 0C0000(hex, 10.14) => packet { 00, 00, 0C }
-      // Note that ALSA accepts 8.16 format.
-      fb_data[0] = (uint8_t)((fb_value >> 8) & 0x000000FF);
-      fb_data[1] = (uint8_t)((fb_value >> 16) & 0x000000FF);
-      fb_data[2] = (uint8_t)((fb_value >> 24) & 0x000000FF);
-    }
+		// Update last writable buffer size
+		audio_buf_writable_samples_last = audio_buf_writable_samples;
+		// Set 10.14 format feedback data
+		// Order of 3 bytes in feedback packet: { LO byte, MID byte, HI byte }
+		// 48.0 (dec) => 300000(hex, 8.16) => 0C0000(hex, 10.14) => packet { 00, 00, 0C }
+		// Note that ALSA accepts 8.16 format.
+		fb_data[0] = (uint8_t)((fb_value >> 8) & 0x000000FF);
+		fb_data[1] = (uint8_t)((fb_value >> 16) & 0x000000FF);
+		fb_data[2] = (uint8_t)((fb_value >> 24) & 0x000000FF);
+		}
+
 
     /* Transmit feedback only when the last one is transmitted */
     if (tx_flag == 0U) {
@@ -700,9 +722,8 @@ static uint8_t USBD_AUDIO_DataOut(USBD_HandleTypeDef* pdev,  uint8_t epnum)
       curr_length = 0U;
     }
 
-    uint32_t num_of_samples = 0U;
     uint32_t tmpbuf_ptr = 0U;
-    num_of_samples = curr_length / 6; // 3bytes per sample
+    uint32_t num_of_samples = curr_length / 6; // 3bytes per sample
 
     for (int i = 0; i < num_of_samples; i++) {
     	// I2S transmit buffer expects {HiByte:MidByte, LoByte:00} for each 24-bit sample
@@ -717,7 +738,7 @@ static uint8_t USBD_AUDIO_DataOut(USBD_HandleTypeDef* pdev,  uint8_t epnum)
         // Rollover at end of buffer
         if (haudio->wr_ptr >= AUDIO_TOTAL_BUF_SIZE) {
         	haudio->wr_ptr = 0U;
-      	  	  }
+      	  	}
     	}
 
     // Start playing when half of the audio buffer is filled
@@ -730,7 +751,7 @@ static uint8_t USBD_AUDIO_DataOut(USBD_HandleTypeDef* pdev,  uint8_t epnum)
         if (haudio->rd_enable == 0U) {
           haudio->rd_enable = 1U;
           // Set last writable buffer size to actual value. Note that rd_ptr is 0 now.
-          audio_buf_writable_size_last = AUDIO_TOTAL_BUF_SIZE - haudio->wr_ptr;
+          audio_buf_writable_samples_last = (AUDIO_TOTAL_BUF_SIZE - haudio->wr_ptr)/6;
         }
 
         ((USBD_AUDIO_ItfTypeDef*)pdev->pUserData)->AudioCmd(&haudio->buffer[0], AUDIO_TOTAL_BUF_SIZE * 2, AUDIO_CMD_START);
@@ -948,7 +969,7 @@ static void AUDIO_OUT_StopAndReset(USBD_HandleTypeDef* pdev)
   all_ready = 0U;
   tx_flag = 1U;
   is_playing = 0U;
-  audio_buf_writable_size_last = AUDIO_TOTAL_BUF_SIZE / 2U;
+  audio_buf_writable_samples_last = AUDIO_TOTAL_BUF_SIZE /(2*6);
 
   haudio->offset = AUDIO_OFFSET_UNKNOWN;
   haudio->rd_enable = 0U;
@@ -975,20 +996,15 @@ static void AUDIO_OUT_Restart(USBD_HandleTypeDef* pdev)
 
   switch (haudio->freq) {
     case 44100:
-      //fb_raw = fb_nom = fb_value = (44 << 22) + (1 << 22) / 10;
-      fb_raw = fb_nom = fb_value = I2S_Clk_Config24[0].nominal_fdbk;
+      fb_nom = fb_value = I2S_Clk_Config24[0].nominal_fdbk;
       break;
     case 48000:
-      //fb_raw = fb_nom = fb_value = 48 << 22;
-      fb_raw = fb_nom = fb_value = I2S_Clk_Config24[1].nominal_fdbk;
+      fb_nom = fb_value = I2S_Clk_Config24[1].nominal_fdbk;
       break;
     case 96000:
-      //fb_raw = fb_nom = fb_value = 96 << 22;
-      fb_raw = fb_nom = fb_value = I2S_Clk_Config24[2].nominal_fdbk;
+    default :
+      fb_nom = fb_value = I2S_Clk_Config24[2].nominal_fdbk;
       break;
-    default:
-      //fb_raw = fb_nom = fb_value = (44 << 22) + (1 << 22) / 10;
-      fb_raw = fb_nom = fb_value = I2S_Clk_Config24[2].nominal_fdbk;
   }
 
   ((USBD_AUDIO_ItfTypeDef*)pdev->pUserData)->Init(haudio->freq, VOL_PERCENT(haudio->vol), 0);

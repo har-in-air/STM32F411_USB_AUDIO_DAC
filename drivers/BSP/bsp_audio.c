@@ -246,9 +246,7 @@ __weak void BSP_AUDIO_OUT_HalfTransfer_CallBack(void){}
 /**
   * @brief  Manages the DMA FIFO error event.
   */
-__weak void BSP_AUDIO_OUT_Error_CallBack(void)
-{
-}
+__weak void BSP_AUDIO_OUT_Error_CallBack(void){}
 
 
 /**

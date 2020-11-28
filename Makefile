@@ -110,6 +110,7 @@ C_DEFS =  \
 -DUSE_HAL_DRIVER \
 -DSTM32F411xE \
 -DUSE_FULL_ASSERT \
+-DDEBUG_FEEDBACK_ENDPOINT\
 #-DUSE_MCLK_OUT
 
 
@@ -152,7 +153,7 @@ LDSCRIPT = STM32F411CEUX_FLASH.ld
 # libraries
 LIBS = -lc -lm -lnosys 
 LIBDIR = 
-LDFLAGS = $(MCU) -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections
+LDFLAGS = $(MCU) -specs=nano.specs  -u _printf_float -T$(LDSCRIPT) $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections
 
 # default action: build all
 all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin
