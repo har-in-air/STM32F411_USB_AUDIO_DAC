@@ -1,5 +1,6 @@
 #include "main.h"
 #include "usart.h"
+#include "usbd_audio.h"
 #include <stdio.h>
 #include <stdarg.h>
 
@@ -24,18 +25,13 @@ int main(void) {
 
   // Init Device Library
   USBD_Init(&USBD_Device, &AUDIO_Desc, 0);
-
   // Add Supported Class
   USBD_RegisterClass(&USBD_Device, USBD_AUDIO_CLASS);
-
   // Add Interface callbacks for AUDIO Class
   USBD_AUDIO_RegisterInterface(&USBD_Device, &USBD_AUDIO_fops);
-
   // Start Device Process
   USBD_Start(&USBD_Device);
   
-  //int loop_counter = 0;
-
   while (1) {
     switch (audio_status.frequency) {
       case 44100:
@@ -60,7 +56,20 @@ int main(void) {
     }
 
     HAL_Delay(100);
-    //printMsg("%d %d\r\n", audio_status.frequency, loop_counter++);
+#ifdef DEBUG_FEEDBACK_ENDPOINT
+	if (BtnPressed) {
+		BtnPressed = 0;
+		printMsg("DbgOptimalWritableSamples = %d\r\nDbgSafeZoneWritableSamples = %d\r\n", AUDIO_TOTAL_BUF_SIZE/(2*6), AUDIO_BUF_SAFEZONE_SAMPLES);
+		printMsg("DbgMaxWritableSamples = %d\r\nDbgMinWritableSamples = %d\r\n\r\n", DbgMaxWritableSamples, DbgMinWritableSamples);
+		int count = 256;
+		while (count--){
+			// print oldest to newest
+			//printMsg("%d %d %f\r\n", DbgSofHistory[DbgIndex], DbgWritableSampleHistory[DbgIndex], DbgFeedbackHistory[DbgIndex]);
+			DbgIndex++;
+			}
+		}
+#endif
+
   }
 }
 

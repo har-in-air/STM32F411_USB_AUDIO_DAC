@@ -533,12 +533,12 @@ static uint8_t USBD_AUDIO_DataIn(USBD_HandleTypeDef* pdev,
 
 
 #ifdef DEBUG_FEEDBACK_ENDPOINT
-static volatile uint32_t  DbgMinWritableSamples = 99999;
-static volatile uint32_t  DbgMaxWritableSamples = 0;
-static volatile uint32_t  DbgSofHistory[256] = {0};
-static volatile uint32_t  DbgWritableSampleHistory[256] = {0};
-static volatile float     DbgFeedbackHistory[256] = {0};
-static volatile uint8_t   DbgIndex = 0; // rollover every 256 entries
+volatile uint32_t  DbgMinWritableSamples = 99999;
+volatile uint32_t  DbgMaxWritableSamples = 0;
+volatile uint32_t  DbgSofHistory[256] = {0};
+volatile uint32_t  DbgWritableSampleHistory[256] = {0};
+volatile float     DbgFeedbackHistory[256] = {0};
+volatile uint8_t   DbgIndex = 0; // rollover every 256 entries
 static volatile uint32_t  DbgSofCounter = 0;
 #endif
 
@@ -609,18 +609,6 @@ static uint8_t USBD_AUDIO_SOF(USBD_HandleTypeDef* pdev)
 			DbgFeedbackHistory[DbgIndex] = (float)(fb_value >> 8)/(float)(1<<14);
 			DbgSofHistory[DbgIndex] = DbgSofCounter;
 			DbgIndex++; // uint8_t, so only record last 256 entries
-			}
-
-		if (BtnPressed) {
-			printMsg("DbgOptimalWritableSamples = %d\r\nDbgSafeZoneWritableSamples = %d\r\n", AUDIO_TOTAL_BUF_SIZE/(2*6), AUDIO_BUF_SAFEZONE_SAMPLES);
-			printMsg("DbgMaxWritableSamples = %d\r\nDbgMinWritableSamples = %d\r\n", DbgMaxWritableSamples, DbgMinWritableSamples);
-			BtnPressed = 0;
-			int count = 256;
-			while (count--){
-				// print oldest to newest
-				//printMsg("%d %d %f\r\n", DbgSofHistory[DbgIndex], DbgWritableSampleHistory[DbgIndex], DbgFeedbackHistory[DbgIndex]);
-				DbgIndex++;
-				}
 			}
 		#endif
 
@@ -979,7 +967,12 @@ static void AUDIO_OUT_StopAndReset(USBD_HandleTypeDef* pdev)
   tx_flag = 1U;
   is_playing = 0U;
   audio_buf_writable_samples_last = AUDIO_TOTAL_BUF_SIZE /(2*6);
-
+#ifdef DEBUG_FEEDBACK_ENDPOINT
+  DbgMinWritableSamples = 99999;
+  DbgMaxWritableSamples = 0;
+  DbgIndex = 0;
+  DbgSofCounter = 0;
+#endif
   haudio->offset = AUDIO_OFFSET_UNKNOWN;
   haudio->rd_enable = 0U;
   haudio->rd_ptr = 0U;
