@@ -3,7 +3,7 @@
 
 void Error_Handler(void);
 
-uint32_t GPIO_PIN[LEDn] = {
+uint32_t GPIO_PIN[4] = {
 	LED1_PIN,
     LED2_PIN,
     LED3_PIN,
@@ -14,13 +14,13 @@ uint32_t GPIO_PIN[LEDn] = {
 volatile uint32_t BtnPressed = 0;
 
 void BSP_LED_Init(Led_TypeDef Led) {
-  GPIO_InitTypeDef  gpio_init_structure;
+  GPIO_InitTypeDef  gpio_init_structure = {0};
 
   if (Led <= LED4)  {
     gpio_init_structure.Pin   = GPIO_PIN[Led];
     gpio_init_structure.Mode  = GPIO_MODE_OUTPUT_PP;
     gpio_init_structure.Pull  = GPIO_PULLUP;
-    gpio_init_structure.Speed = GPIO_SPEED_HIGH;
+    gpio_init_structure.Speed = GPIO_SPEED_LOW;
 
     LED_GPIO_CLK_ENABLE();
 
@@ -33,7 +33,7 @@ void BSP_LED_Init(Led_TypeDef Led) {
 
 
 void BSP_LED_DeInit(Led_TypeDef Led){
-  GPIO_InitTypeDef  gpio_init_structure;
+  GPIO_InitTypeDef  gpio_init_structure = {0};
 
   if (Led <= LED4)  {
     gpio_init_structure.Pin = GPIO_PIN[Led];

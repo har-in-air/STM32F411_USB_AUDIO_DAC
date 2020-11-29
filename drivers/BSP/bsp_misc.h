@@ -21,27 +21,25 @@ typedef enum {
 
 extern volatile uint32_t BtnPressed;
 
-#define LEDn                             ((uint8_t)4)
-
 // 4 Leds are connected to MCU directly on PB4, PB5, PB6, PB7 
-#define LED_GPIO_PORT                   ((GPIO_TypeDef*)GPIOB)
+#define LED_GPIO_PORT                   GPIOB
 
 #define LED_GPIO_CLK_ENABLE()           __HAL_RCC_GPIOB_CLK_ENABLE()
 #define LED_GPIO_CLK_DISABLE()          __HAL_RCC_GPIOB_CLK_DISABLE()
 
-#define LED1_PIN                         ((uint32_t)GPIO_PIN_4)
-#define LED2_PIN                         ((uint32_t)GPIO_PIN_5)
-#define LED3_PIN                         ((uint32_t)GPIO_PIN_6)
-#define LED4_PIN                         ((uint32_t)GPIO_PIN_7)
+#define LED1_PIN                         GPIO_PIN_4
+#define LED2_PIN                         GPIO_PIN_5
+#define LED3_PIN                         GPIO_PIN_6
+#define LED4_PIN                         GPIO_PIN_7
 
 
-void             BSP_LED_Init(Led_TypeDef Led);
-void             BSP_LED_DeInit(Led_TypeDef Led);
-void             BSP_LED_On(Led_TypeDef Led);
-void             BSP_LED_Off(Led_TypeDef Led);
-void             BSP_LED_Toggle(Led_TypeDef Led);
-void             BSP_PB_Init(void);
-uint32_t         BSP_PB_GetState(void);
+void BSP_LED_Init(Led_TypeDef Led);
+void BSP_LED_DeInit(Led_TypeDef Led);
+void BSP_LED_On(Led_TypeDef Led);
+void BSP_LED_Off(Led_TypeDef Led);
+void BSP_LED_Toggle(Led_TypeDef Led);
+void BSP_PB_Init(void);
+uint32_t BSP_PB_GetState(void);
 
 #ifdef __cplusplus
 }

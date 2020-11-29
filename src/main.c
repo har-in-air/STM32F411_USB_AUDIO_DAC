@@ -56,7 +56,7 @@ int main(void) {
     }
 
     HAL_Delay(100);
-#ifdef DEBUG_FEEDBACK_ENDPOINT
+#ifdef DEBUG_FEEDBACK_ENDPOINT // see Makefile C_DEFS
     // see USBD_AUDIO_SOF() in usbd_audio.c
 	if (BtnPressed) {
 		BtnPressed = 0;
@@ -138,10 +138,16 @@ void printMsg(char* format, ...) {
 	}
 
 void Error_Handler(void){
-  /* USER CODE BEGIN Error_Handler_Debug */
-  /* User can add his own implementation to report the HAL error return state */
+	uint32_t counter;
+	while(1){
+		BSP_LED_On(LED_RED);
+		counter = 0xFFFF;
+		while (counter--) ;
+		BSP_LED_Off(LED_RED);
+		counter = 0xFFFF;
+		while (counter--) ;
+	}
 
-  /* USER CODE END Error_Handler_Debug */
 }
 
 #ifdef  USE_FULL_ASSERT
