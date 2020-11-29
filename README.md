@@ -22,14 +22,14 @@
 ## Hardware
 
 * WeAct STM32F411CEU6 development board
-**I2S2 interface to PCM5102A DAC module
-**SWD interface to ST-LinkV2 adapter for flashing code
-**UART2 serial interface for debug using PL2303 USB-UART adapter
+    *I2S2 interface to PCM5102A DAC module
+    *SWD interface to ST-LinkV2 adapter for flashing code
+    *UART2 serial interface for debug using PL2303 USB-UART adapter
 * PCM5102A I2S DAC module
-**FLT, DMP, SCL, FMT pins grounded
-**XMT connected to 3.3V
-**100uF 6.3V tantalum capacitor across VCC and ground 
-**VCC connected to 5V pin on STM32F411 Black Pill board
+    *FLT, DMP, SCL, FMT pins grounded
+    *XMT connected to 3.3V
+    *100uF 6.3V tantalum capacitor across VCC and ground 
+    *VCC connected to 5V pin on STM32F411 Black Pill board
 
 <img src="prototype.jpg" />
 
