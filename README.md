@@ -8,7 +8,7 @@
 * Supports 24-bit audio streams with Fs = 44.1kHz, 48kHz or 96kHz
 * I2S master output with I2S Philips standard 24/32 data frame
 * Optional MCLK output generation
-* Uses inexpensive Aliexpress-sourced STM32F411 "Black Pill" and PCM5102A modules. I'm pleasantly surprised to note that this USB-DAC is a noticeable improvement from my laptop headphone output, when driving my old iPhone SE standard wired earbuds. Better clarity in general and with punchier bass. I normally re-use my prototype modules for whatever new project comes to mind, but I now intend to use this as a permanent headphone driver!
+* Uses inexpensive Aliexpress-sourced STM32F411 "Black Pill" and PCM5102A modules. I'm pleasantly surprised to note that this USB-DAC is a noticeable improvement from my laptop headphone output, when driving my old iPhone SE standard wired earbuds. Better clarity in general and with punchier bass. I normally re-use my prototype modules for whatever new project comes to mind, but I intend to use this setup as a permanent headphone driver!
 
 
 ## Credits
@@ -22,14 +22,14 @@
 ## Hardware
 
 * WeAct STM32F411CEU6 development board
-    *I2S2 interface to PCM5102A DAC module
-    *SWD interface to ST-LinkV2 adapter for flashing code
-    *UART2 serial interface for debug using PL2303 USB-UART adapter
+    * I2S2 interface to PCM5102A DAC module
+    * SWD interface to ST-LinkV2 adapter for flashing code
+    * UART2 serial interface for debug using PL2303 USB-UART adapter
 * PCM5102A I2S DAC module
-    *FLT, DMP, SCL, FMT pins grounded
-    *XMT connected to 3.3V
-    *100uF 6.3V tantalum capacitor across VCC and ground 
-    *VCC connected to 5V pin on STM32F411 Black Pill board
+    * FLT, DMP, SCL, FMT pins grounded
+    * XMT connected to 3.3V
+    * 100uF 6.3V tantalum capacitor across VCC and ground 
+    * VCC connected to 5V pin on STM32F411 Black Pill board
 
 <img src="prototype.jpg" />
 
