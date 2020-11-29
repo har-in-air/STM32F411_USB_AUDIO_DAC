@@ -22,9 +22,10 @@
 ## Hardware
 
 * WeAct STM32F411CEU6 development board
-    * I2S2 interface to PCM5102A DAC module
+    * I2S2 interface to PCM5102A DAC module using WS, BCK and SDO. The PCM5102A does not need
+    an MCLK input.
     * SWD interface to ST-LinkV2 adapter for flashing code
-    * UART2 serial interface for debug using PL2303 USB-UART adapter
+    * UART1 serial interface for debug using PL2303 USB-UART adapter
 * PCM5102A I2S DAC module
     * FLT, DMP, SCL, FMT pins grounded
     * XMT connected to 3.3V
