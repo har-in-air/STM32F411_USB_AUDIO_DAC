@@ -74,7 +74,7 @@ Any change to this pointer distance implies the usb host and i2s playback Fs val
 To correct this, we implement a PID style feedback mechanism where we report an ideal Fs feedback frequency
 based on the deviation from the nominal pointer distance. We want to avoid the write process overwriting the unread packets, and we also want to minimize the oscillation in Fs due to unnecessarily large corrections.
 
-This is a debug log of changes in Fs due to the implemented mechanism. As you can see, the feedback is able to keep the pointer distance within a safe zone while the oscillation in Fs is minimal.
+This is a debug log of changes in Fs due to the implemented mechanism. The first datum is the SOF frame counter, the second is the pointer distance in samples, the third is the feedback Fs. As you can see, the feedback is able to minimize changes in pointer distance AND oscillations in Fs frequency.
 
 <img src="endpoint_feedback.png" />
 
