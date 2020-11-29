@@ -8,6 +8,7 @@
 * Supports 24-bit audio streams with Fs = 44.1kHz, 48kHz or 96kHz
 * I2S master output with I2S Philips standard 24/32 data frame
 * Optional MCLK output generation
+* Uses inexpensive Aliexpress-sourced STM32F411 "Black Pill" and PCM5102A modules. I'm pleasantly surprised to note that this USB-DAC is a noticeable improvement from my laptop headphone output, when driving my old iPhone SE standard wired earbuds. Better clarity in general and with punchier bass. I normally re-use my prototype modules for whatever new project comes to mind, but I now intend to use this as a permanent headphone driver!
 
 
 ## Credits
