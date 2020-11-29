@@ -65,7 +65,7 @@ int main(void) {
 		int count = 256;
 		while (count--){
 			// print oldest to newest
-			//printMsg("%d %d %f\r\n", DbgSofHistory[DbgIndex], DbgWritableSampleHistory[DbgIndex], DbgFeedbackHistory[DbgIndex]);
+			printMsg("%d %d %f\r\n", DbgSofHistory[DbgIndex], DbgWritableSampleHistory[DbgIndex], DbgFeedbackHistory[DbgIndex]);
 			DbgIndex++;
 			}
 		}
