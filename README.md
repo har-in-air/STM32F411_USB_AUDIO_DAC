@@ -3,16 +3,16 @@
 ## Features
 
 * USB Full Speed Class 1 device
-* Isochronous with endpoint feedback (3bytes, 10.14 format) to maintain sampling frequency synchronization
+* Isochronous with endpoint feedback (3bytes, 10.14 format) to synchronize sampling frequency Fs
 * Bus powered
-* Supports 24-bit 44.1kHz, 48kHz and 96kHz audio streams
+* Supports 24-bit audio streams with Fs = 44.1kHz, 48kHz or 96kHz
 * I2S master output with I2S Philips standard 24/32 data frame
 * Optional MCLK output generation
 
 
 ## Credits
-[Dragonman USB Audio project](https://github.com/dragonman225/stm32f469-usbaudio)
-[Endpoint feedback](https://www.microchip.com/forums/m547546.aspx)
+* [Dragonman USB Audio project](https://github.com/dragonman225/stm32f469-usbaudio)
+* [Endpoint feedback](https://www.microchip.com/forums/m547546.aspx)
 
 ## Software Development Environment
 * Ubuntu 20.04 AMDx64
@@ -47,9 +47,10 @@
 ## Optimizing Pulseaudio on Ubuntu 20.04 for USB-Audio DAC
 
 * Edit `/etc/pulse/daemon.conf` as root
-* Force re-sampling to 96kHz, resize to 24bits
+* Force re-sampling to 96kHz
+* Resize to 24bits
 * Use highest quality re-sampling algorithm
-* Save file, log out and login again for the changes to take effect
+* Save file, log out and log in again for the changes to take effect
 
 <img src="pulseaudio_config.png" />
 
