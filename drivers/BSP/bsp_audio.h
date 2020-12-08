@@ -26,6 +26,13 @@ extern const I2S_CLK_CONFIG I2S_Clk_Config24[];
 #define BSP_AUDIO_OUT_STEREOMODE        ((uint32_t)0x00000004) /* STEREO MODE          */
 #define BSP_AUDIO_OUT_MONOMODE          ((uint32_t)0x00000008) /* MONO MODE            */
 
+#define AUDIO_MUTE_ON                 1
+#define AUDIO_MUTE_OFF                0
+
+#define AUDIO_MUTE_PIN						GPIO_PIN_8
+#define AUDIO_MUTE_PORT						GPIOA
+#define AUDIO_MUTE_PORT_ENABLE()		    __HAL_RCC_GPIOA_CLK_ENABLE()
+
 /* I2S peripheral configuration defines */
 #define AUDIO_I2Sx                          SPI2
 #define AUDIO_I2Sx_CLK_ENABLE()             __HAL_RCC_SPI2_CLK_ENABLE()

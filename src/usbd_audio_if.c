@@ -69,7 +69,6 @@ USBD_AUDIO_ItfTypeDef USBD_AUDIO_fops = {
 
 /**
  * @brief  Initializes the AUDIO media low layer.
- * @param  bitDepth: 16 or 24
  * @param  AudioFreq: Audio frequency used to play the audio stream.
  * @param  Volume: Initial volume level (from 0 (Mute) to 100 (Max))
  * @param  options: Reserved for future use

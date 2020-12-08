@@ -28,7 +28,7 @@
     * UART1 serial interface for debug using PL2303 USB-UART adapter
 * PCM5102A I2S DAC module
     * FLT, DMP, SCL, FMT pins grounded
-    * XMT connected to 3.3V
+    * XMT (software mute) connected to pin PA8 on Black Pill board
     * 100uF 6.3V tantalum capacitor across VCC and ground 
     * VCC connected to 5V pin on STM32F411 Black Pill board
 
