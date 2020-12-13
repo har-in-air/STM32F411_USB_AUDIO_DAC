@@ -14,7 +14,7 @@ int main(void) {
   HAL_Init();
   SystemClock_Config();
 
-  MX_USART1_UART_Init();
+  MX_USART2_UART_Init();
   printMsg("\r\nUSB Audio I2S Bridge\r\n");
 
   BSP_PB_Init();
@@ -133,7 +133,7 @@ void printMsg(char* format, ...) {
 	va_list args;
 	va_start(args, format);
 	vsprintf(sz, format, args);
-	HAL_UART_Transmit(&huart1, (uint8_t *)sz, strlen(sz), HAL_MAX_DELAY);
+	HAL_UART_Transmit(&huart2, (uint8_t *)sz, strlen(sz), HAL_MAX_DELAY);
 	va_end(args);
 	}
 
@@ -164,4 +164,3 @@ void assert_failed(uint8_t *file, uint32_t line)
 }
 #endif /* USE_FULL_ASSERT */
 
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
