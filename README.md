@@ -8,7 +8,9 @@
 * Supports 24-bit audio streams with Fs = 44.1kHz, 48kHz or 96kHz
 * I2S master output with I2S Philips standard 24/32 data frame
 * Optional MCLK output generation
-* Uses inexpensive Aliexpress-sourced STM32F411 "Black Pill" and PCM5102A modules. I'm pleasantly surprised to note that this USB-DAC is a noticeable improvement from my laptop headphone output, when driving my old iPhone SE standard wired earbuds. Better clarity in general and with punchier bass. I normally re-use my prototype modules for whatever new project comes to mind, but I intend to use this setup as a permanent headphone driver!
+* Uses inexpensive Aliexpress-sourced STM32F411 "Black Pill" and PCM5102A modules. 
+
+This USB-DAC is a noticeable improvement from my laptop headphone output, when driving my old iPhone SE standard wired earbuds. Better clarity in general and with punchier bass. I normally re-use my prototype modules for whatever new project comes to mind, but I am now using this setup as a permanent headphone driver.
 
 
 ## Credits
@@ -17,20 +19,20 @@
 
 ## Software Development Environment
 * Ubuntu 20.04 AMDx64
-* STM32CubeIDE v1.3.0 (makefile project)
+* STM32CubeIDE v1.5.1 (makefile project)
 
 ## Hardware
 
-* WeAct STM32F411CEU6 development board
+* WeAct STM32F411CEU6 "Black Pill" development board
     * I2S2 interface to PCM5102A DAC module using WS, BCK and SDO. The PCM5102A does not need
     an MCLK input.
-    * SWD interface to ST-LinkV2 adapter for flashing code
-    * UART2 serial interface for debug using PL2303 USB-UART adapter
+    * LEDs to indicate sampling frequency Fs
+    * UART2 serial interface for debug information
 * PCM5102A I2S DAC module
     * FLT, DMP, SCL, FMT pins grounded
-    * XMT (software mute) connected to pin PA8 on Black Pill board
-    * 100uF 6.3V tantalum capacitor across VCC and ground 
+    * XMT (software mute) connected to pin PB8 on Black Pill board
     * VCC connected to 5V pin on STM32F411 Black Pill board
+    * 100uF 6.3V tantalum capacitor across VCC and ground 
 
 <img src="prototype.jpg" />
 
@@ -75,12 +77,12 @@ is disabled, the optimal register settings result in a value of 96.0144kHz.
 
 <img src="i2s_pll_settings.png" />
 
-Since the USB host is asynchronous to the PLLI2S Fs clock generator, the incoming Fs rate of audio packets will be different. So we need
-to have a circular buffer of audio packets to accommodate the difference in incoming and outgoing Fs. 
+Since the USB host is asynchronous to the PLLI2S Fs clock generator, the incoming Fs rate of audio packets will be slightly different. We use
+a circular buffer of audio packets to accommodate the difference in incoming and outgoing Fs. 
 
 The USB driver writes incoming audio packets to this buffer while the I2S transmit DMA reads from this buffer. We start I2S playback when the buffer is half full, and then try to maintain this position, i.e. the difference between the write pointer and read pointer should optimally be half of the buffer size.
 
-Any change to this pointer distance implies the usb host and i2s playback Fs values are not in sync.
+Any change to this pointer distance implies the USB host and I2S playback Fs values are not in sync.
 To correct this, we implement a PID style feedback mechanism where we report an ideal Fs feedback frequency
 based on the deviation from the nominal pointer distance. We want to avoid the write process overwriting the unread packets, and we also want to minimize the oscillation in Fs due to unnecessarily large corrections.
 
