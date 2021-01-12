@@ -30,8 +30,8 @@ extern const I2S_CLK_CONFIG I2S_Clk_Config24[];
 #define AUDIO_MUTE_OFF                0
 
 #define AUDIO_MUTE_PIN						GPIO_PIN_8
-#define AUDIO_MUTE_PORT						GPIOA
-#define AUDIO_MUTE_PORT_ENABLE()		    __HAL_RCC_GPIOA_CLK_ENABLE()
+#define AUDIO_MUTE_PORT						GPIOB
+#define AUDIO_MUTE_PORT_ENABLE()		    __HAL_RCC_GPIOB_CLK_ENABLE()
 
 /* I2S peripheral configuration defines */
 #define AUDIO_I2Sx                          SPI2

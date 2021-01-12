@@ -17,11 +17,7 @@ int main(void) {
   MX_USART2_UART_Init();
   printMsg("\r\nUSB Audio I2S Bridge\r\n");
 
-  BSP_PB_Init();
-  BSP_LED_Init(LED_YELLOW);
-  BSP_LED_Init(LED_GREEN);
-  BSP_LED_Init(LED_RED);
-  BSP_LED_Init(LED_BLUE);
+  bsp_init();
 
   // Init Device Library
   USBD_Init(&USBD_Device, &AUDIO_Desc, 0);
@@ -35,24 +31,25 @@ int main(void) {
   while (1) {
     switch (audio_status.frequency) {
       case 44100:
-        BSP_LED_On(LED_YELLOW);
-        BSP_LED_Off(LED_GREEN);
-        BSP_LED_Off(LED_BLUE);
-        break;
+          BSP_LED_Off(LED_RED);
+          BSP_LED_Off(LED_GREEN);
+          BSP_LED_On(LED_BLUE);
+          break;
       case 48000:
-        BSP_LED_Off(LED_YELLOW);
-        BSP_LED_On(LED_GREEN);
-        BSP_LED_Off(LED_BLUE);
-        break;
+          BSP_LED_Off(LED_RED);
+          BSP_LED_On(LED_GREEN);
+          BSP_LED_Off(LED_BLUE);
+          break;
       case 96000:
-        BSP_LED_Off(LED_YELLOW);
-        BSP_LED_Off(LED_GREEN);
-        BSP_LED_On(LED_BLUE);
-        break;
+          BSP_LED_On(LED_RED);
+          BSP_LED_Off(LED_GREEN);
+          BSP_LED_Off(LED_BLUE);
+          break;
       default:
-        BSP_LED_Off(LED_YELLOW);
-        BSP_LED_Off(LED_GREEN);
-        BSP_LED_Off(LED_BLUE);
+          BSP_LED_Off(LED_RED);
+          BSP_LED_Off(LED_GREEN);
+          BSP_LED_Off(LED_BLUE);
+          break;
     }
 
     HAL_Delay(100);
@@ -140,10 +137,7 @@ void printMsg(char* format, ...) {
 void Error_Handler(void){
 	uint32_t counter;
 	while(1){
-		BSP_LED_On(LED_RED);
-		counter = 0xFFFF;
-		while (counter--) ;
-		BSP_LED_Off(LED_RED);
+		BSP_OnboardLED_Toggle();
 		counter = 0xFFFF;
 		while (counter--) ;
 	}
