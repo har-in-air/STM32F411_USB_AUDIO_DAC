@@ -2,7 +2,7 @@
 
 ## Features
 
-* USB Full Speed Class 1 device
+* USB Full Speed Class 1 Audio device, no drivers needed
 * Isochronous with endpoint feedback (3bytes, 10.14 format) to synchronize sampling frequency Fs
 * Bus powered
 * Supports 24-bit audio streams with Fs = 44.1kHz, 48kHz or 96kHz
@@ -10,7 +10,7 @@
 * Optional MCLK output generation
 * Uses inexpensive Aliexpress-sourced STM32F411 "Black Pill" and PCM5102A modules. 
 
-This USB-DAC is a noticeable improvement from my laptop headphone output, when driving my old iPhone SE standard wired earbuds. Better clarity in general and with punchier bass. I normally re-use my prototype modules for whatever new project comes to mind, but I am now using this setup as a permanent headphone driver.
+This USB-DAC is a noticeable improvement from my laptop headphone output, when driving my old iPhone SE standard wired earbuds. Better clarity in general and with punchier bass. I normally re-cycle my prototype modules for new projects, but I am now using this setup as a permanent headphone driver.
 
 
 ## Credits
@@ -67,9 +67,10 @@ This USB-DAC is a noticeable improvement from my laptop headphone output, when d
 
 ## Optimizing Windows 10 for USB-Audio DAC
 
+* Use the Control Panel Sound playback device properties dialog
+
 <img src="win10_96kHz_24bit.png" />
 
-* Use the Control Panel Sound playback device properties dialog
 
 ## Endpoint Feedback mechanism
 
