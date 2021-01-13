@@ -65,6 +65,12 @@ This USB-DAC is a noticeable improvement from my laptop headphone output, when d
 
 <img src="pulseaudio_config.png" />
 
+## Optimizing Windows 10 for USB-Audio DAC
+
+<img src="win10_96kHz_24bit.png" />
+
+* Use the Control Panel Sound playback device properties dialog
+
 ## Endpoint Feedback mechanism
 
 <img src="feedback_endpoint_spec.png" />
