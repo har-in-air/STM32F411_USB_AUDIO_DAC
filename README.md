@@ -35,12 +35,12 @@ are back in service.
 ## Hardware
 
 * WeAct STM32F411CEU6 "Black Pill" development board
- * I2S_2 peripheral interface generates WS, BCK and SDO. 
- * LEDs to indicate sampling frequency and diagnostic/errors.
- * UART2 serial interface for debug information
+	* I2S_2 peripheral interface generates WS, BCK and SDO. 
+	* LEDs to indicate sampling frequency and diagnostic/errors.
+	* UART2 serial interface for debug information
 * PCM5102A I2S DAC module
- * MCK is generated internally 
- * 100uF 6.3V tantalum capacitor across VCC and ground 
+	* MCK is generated internally 
+	* 100uF 6.3V tantalum capacitor across VCC and ground 
 ```
 F411	PCM5102A   LED		UART2 	Description
 --------------------------------------------------------------------
