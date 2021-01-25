@@ -2,7 +2,7 @@
 
 ## Features
 
-* USB Full Speed Class 1 Audio device, no drivers needed
+* USB Full Speed Class 1 Audio device, no special drivers needed
 * Isochronous with endpoint feedback (3bytes, 10.14 format) to synchronize sampling frequency Fs
 * Bus powered
 * Supports 24-bit audio streams with Fs = 44.1kHz, 48kHz or 96kHz
@@ -18,11 +18,12 @@ my cheap but comfortable Sennheiser PX60 headphones.
 
 I retrieved the Grado headphones and tried them out, the difference is astonishing.  I'm no golden-ears audiophile, but 
 the amount of detail and frequency response is remarkable. I'm kind of surprised that the DACs on brand name (Lenovo & Vaio) laptops are
-so poor in quality, but have a look at this [Cambridge Audio website](https://www.cambridgeaudio.com/row/en/blog/our-guide-usb-audio-why-should-i-use-it?fbclid=IwAR33SS0e_jNiQ1tBSOj29KdEOi1mhHn1r87bMg-VyAMmR2NeSmKETod-JkY#:~:text=Class%201%20will%20give%20you,step%20up%20to%20Class%202) comparing a dedicated class 1 USB DAC to a laptop headphone output. I have to agree with them.
+so poor in quality, but have a look at this [Cambridge Audio website](https://www.cambridgeaudio.com/row/en/blog/our-guide-usb-audio-why-should-i-use-it?fbclid=IwAR33SS0e_jNiQ1tBSOj29KdEOi1mhHn1r87bMg-VyAMmR2NeSmKETod-JkY#:~:text=Class%201%20will%20give%20you,step%20up%20to%20Class%202) comparing a dedicated USB Audio Class 1 DAC to a laptop headphone output. I have to agree with them.
 
 I normally re-cycle my prototype modules for new projects, but I am now using this setup as a permanent headphone driver, and my Grado phones
 are back in service.
 
+When the USB Audio DAC device is enumerated on plug-in, it reports its capabilities (audio class, sampling frequency options, bit depth). If you configure the audio device driver optimally, a native 96kHZ 24bit audio file will play unmodified, while a 44.1kHz or 48kHz 16bit stream will be resized to 24bits and resampled to 96kHz. And yes, even 44.1kHz/16bit MP3 files resized and resampled to 96kHz/24bits sound much better when played back via the USB DAC. I'm not sure why - the PCM5102A isn't marketed as an "audiophile" component, but it obviously can drive high-quality headphones much better than standard laptop/smartphone DAC components.
 
 ## Credits
 * [Dragonman USB Audio project](https://github.com/dragonman225/stm32f469-usbaudio)
