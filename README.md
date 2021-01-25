@@ -10,7 +10,18 @@
 * Optional MCLK output generation
 * Uses inexpensive Aliexpress-sourced STM32F411 "Black Pill" and PCM5102A modules. 
 
-This USB-DAC is a noticeable improvement from my laptop headphone output, when driving my old iPhone SE standard wired earbuds. Better clarity in general and with punchier bass. I normally re-cycle my prototype modules for new projects, but I am now using this setup as a permanent headphone driver.
+I now understand why there is a market for audiophile DACs with higher end headphones. I was given a pair of used Grado SR60 headphones a long time ago and
+was unimpressed. With my laptop and smartphone headphone outputs they didn't sound great compared to my budget earbuds. In fact, they were lacking in bass response. And they are bulky, with a heavy cable. So they've been in a cupboard for the past 16-17 years.
+
+I first noticed that my old iPhone SE standard wired earbuds sounded remarkably good with the USB-DAC, much better than my other budget earbuds and
+my cheap but comfortable Sennheiser PX60 headphones.
+
+I retrieved the Grado headphones and tried them out, the difference is astonishing.  I'm no golden-ears audiophile, but 
+the amount of detail and frequency response is remarkable. I'm kind of surprised that the DACs on brand name (Lenovo & Vaio) laptops are
+so poor in quality, but have a look at this [Cambridge Audio website](https://www.cambridgeaudio.com/row/en/blog/our-guide-usb-audio-why-should-i-use-it?fbclid=IwAR33SS0e_jNiQ1tBSOj29KdEOi1mhHn1r87bMg-VyAMmR2NeSmKETod-JkY#:~:text=Class%201%20will%20give%20you,step%20up%20to%20Class%202) comparing a dedicated class 1 USB DAC to a laptop headphone output. I have to agree with them.
+
+I normally re-cycle my prototype modules for new projects, but I am now using this setup as a permanent headphone driver, and my Grado phones
+are back in service.
 
 
 ## Credits
@@ -24,15 +35,38 @@ This USB-DAC is a noticeable improvement from my laptop headphone output, when d
 ## Hardware
 
 * WeAct STM32F411CEU6 "Black Pill" development board
-    * I2S2 interface to PCM5102A DAC module using WS, BCK and SDO. The PCM5102A does not need
-    an MCLK input.
-    * LEDs to indicate sampling frequency Fs
-    * UART2 serial interface for debug information
+ * I2S_2 peripheral interface generates WS, BCK and SDO. 
+ * LEDs to indicate sampling frequency and diagnostic/errors.
+ * UART2 serial interface for debug information
 * PCM5102A I2S DAC module
-    * FLT, DMP, SCL, FMT pins grounded
-    * XMT (software mute) connected to pin PB8 on Black Pill board
-    * VCC connected to 5V pin on STM32F411 Black Pill board
-    * 100uF 6.3V tantalum capacitor across VCC and ground 
+ * MCK is generated internally 
+ * 100uF 6.3V tantalum capacitor across VCC and ground 
+```
+F411	PCM5102A   LED		UART2 	Description
+--------------------------------------------------------------------
+5V	VCC
+-	3V3
+GND	GND
+GND	FLT				Filter Select = Normal latency
+GND	DMP				De-emphasis off
+GND	SCL				Generate I2S_MCK internally
+B13	BCK				I2S_BCK (Bit Clock)
+B15	DIN				I2S_SDI (Data Input)
+B12	LCK				I2S_WS (LR Clock)
+GND	FMT				Format = I2S
+B8	XMT				Software Mute control
+A6	 -				I2S_MCK (not generated)
+--------------------------------------------------------------------
+B3		   RED 		96kHz
+B6		   GRN			48kHz
+B9		   BLU			44.1kHz
+C13		 on-board		Diagnostic/Error
+--------------------------------------------------------------------
+A2				TX	Serial debug
+A3				RX
+GND				GND
+--------------------------------------------------------------------
+```    
 
 <img src="prototype.jpg" />
 
