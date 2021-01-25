@@ -57,7 +57,7 @@ GND	FMT				Format = I2S
 B8	XMT				Software Mute control
 A6	 -				I2S_MCK (not generated)
 --------------------------------------------------------------------
-B3		   RED 		96kHz
+B3		   RED			96kHz
 B6		   GRN			48kHz
 B9		   BLU			44.1kHz
 C13		 on-board		Diagnostic/Error
