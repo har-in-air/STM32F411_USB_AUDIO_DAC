@@ -209,14 +209,14 @@ __ALIGN_BEGIN static uint8_t USBD_AUDIO_CfgDesc[USB_AUDIO_CONFIG_DESC_SIZ] __ALI
     // 07 byte
 
     // USB Speaker Audio Type I Format Interface Descriptor
-    0x11,                            /* bLength */
+    17,                            /* bLength */
     AUDIO_INTERFACE_DESCRIPTOR_TYPE, /* bDescriptorType */
     AUDIO_STREAMING_FORMAT_TYPE,     /* bDescriptorSubtype */
     AUDIO_FORMAT_TYPE_I,             /* bFormatType */
-    0x02,                            /* bNrChannels */
-    0x03,                            /* bSubFrameSize :  3 Bytes per frame (24bits) */
-    0x18,                            /* bBitResolution (24-bits per sample) */
-    0x03,                            /* bSamFreqType 3 frequencies supported */
+    2,                            /* bNrChannels */
+    3,                            /* bSubFrameSize :  3 Bytes per frame (24bits) */
+    24,                            /* bBitResolution (24-bits per sample) */
+    3,                            /* bSamFreqType 3 frequencies supported */
     AUDIO_SAMPLE_FREQ(44100),        /* Audio sampling frequency coded on 3 bytes */
     AUDIO_SAMPLE_FREQ(48000),        /* Audio sampling frequency coded on 3 bytes */
     AUDIO_SAMPLE_FREQ(96000),        /* Audio sampling frequency coded on 3 bytes */
