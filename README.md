@@ -1,4 +1,4 @@
-# STM32F411 USB to I2S DAC Audio Bridge
+# STM32F4xx "Black Pill" USB to I2S DAC Audio Bridge
 
 ## Features
 
@@ -8,7 +8,9 @@
 * Supports 24-bit audio streams with Fs = 44.1kHz, 48kHz or 96kHz
 * I2S master output with I2S Philips standard 24/32 data frame
 * Optional MCLK output generation
-* Uses inexpensive Aliexpress-sourced STM32F411 "Black Pill" and PCM5102A modules. 
+* Uses inexpensive Aliexpress-sourced STM32F4xx "Black Pill" and PCM5102A modules.
+* Build support (Makefile option) for STM32F401CCU6 and 
+STM32F411CEU6 boards 
 
 I now understand why there is a market for audiophile DACs with higher end headphones. I was given a pair of used Grado SR60 headphones a long time ago and
 was unimpressed. With my laptop and smartphone headphone outputs they didn't sound great compared to my budget earbuds. In fact, they were lacking in bass response. And they are bulky, with a heavy cable. So they've been in a cupboard for the past 16-17 years.
@@ -32,10 +34,11 @@ When the USB Audio DAC device is enumerated on plug-in, it reports its capabilit
 ## Software Development Environment
 * Ubuntu 20.04 AMDx64
 * STM32CubeIDE v1.5.1 (makefile project)
+* STM32 F4 library v1.25.2
 
 ## Hardware
 
-* WeAct STM32F411CEU6 "Black Pill" development board
+* WeAct STM32F411CEU6 or STM32F401CCU6 "Black Pill" development board
 	* I2S_2 peripheral interface generates WS, BCK and SDO. 
 	* LEDs to indicate sampling frequency and diagnostic/errors.
 	* UART2 serial interface for debug information
@@ -43,29 +46,29 @@ When the USB Audio DAC device is enumerated on plug-in, it reports its capabilit
 	* MCK is generated internally 
 	* 100uF 6.3V tantalum capacitor across VCC and ground 
 ```
-F411	PCM5102A   LED		UART2 	Description
+F4xx	PCM5102A   	LED		UART2 	Description
 --------------------------------------------------------------------
-5V	VCC
--	3V3
-GND	GND
-GND	FLT				Filter Select = Normal latency
-GND	DMP				De-emphasis off
-GND	SCL				Generate I2S_MCK internally
-B13	BCK				I2S_BCK (Bit Clock)
-B15	DIN				I2S_SDI (Data Input)
-B12	LCK				I2S_WS (LR Clock)
-GND	FMT				Format = I2S
-B8	XMT				Software Mute control
-A6	 -				I2S_MCK (not generated)
+5V		VCC
+-		3V3
+GND		GND
+GND		FLT							Filter Select = Normal latency
+GND		DMP							De-emphasis off
+GND		SCL							Generate I2S_MCK internally
+B13		BCK							I2S_BCK (Bit Clock)
+B15		DIN							I2S_SDI (Data Input)
+B12		LCK							I2S_WS (LR Clock)
+GND		FMT							Format = I2S
+B8		XMT							Software Mute control
+A6	 	-							I2S_MCK (not generated)
 --------------------------------------------------------------------
-B3		   RED			96kHz
-B6		   GRN			48kHz
-B9		   BLU			44.1kHz
-C13		 on-board		Diagnostic/Error
+B3		   			RED				96kHz
+B6		   			GRN				48kHz
+B9		   			BLU				44.1kHz
+C13		 		on-board			Diagnostic/Error
 --------------------------------------------------------------------
-A2				TX	Serial debug
-A3				RX
-GND				GND
+A2							TX	Serial debug
+A3							RX
+GND							GND
 --------------------------------------------------------------------
 ```    
 

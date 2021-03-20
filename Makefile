@@ -2,7 +2,20 @@
 ######################################
 # target
 ######################################
-TARGET = f411_usb_audio_i2s
+TARGET = usb_audio_i2s
+
+# To build for STM32F411CEU6 versus STM32F401CCU6
+# set ASM_SOURCES, CPU_DEF and LDSCRIPT below 
+
+# STM32F411CEU6 Black Pill (512kB flash, 256kB RAM, 100MHz)
+CPU_DEF = STM32F411xE
+ASM_SOURCES =  startup_stm32f411ceux.s
+LDSCRIPT = STM32F411CEUX_FLASH.ld
+
+# STM32F401CCU6 Black Pill (256kB flash, 64kB RAM, 84MHz)
+#CPU_DEF = STM32F401xC 
+#ASM_SOURCES = startup_stm32f401ccux.s
+#LDSCRIPT = STM32F401CCUX_FLASH.ld
 
 
 ######################################
@@ -33,8 +46,6 @@ src/stm32f4xx_it.c \
 drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd.c \
 drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd_ex.c \
 drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.c \
-drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c.c \
-drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c_ex.c \
 drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s.c \
 drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s_ex.c \
 drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c \
@@ -62,8 +73,6 @@ stm32_usb/Core/Src/usbd_ioreq.c \
 stm32_usb/Class/AUDIO/Src/usbd_audio.c
 
 
-# ASM sources
-ASM_SOURCES =  startup_stm32f411ceux.s
 
 
 #######################################
@@ -108,10 +117,11 @@ AS_DEFS =
 # C defines
 C_DEFS =  \
 -DUSE_HAL_DRIVER \
--DSTM32F411xE \
 -DUSE_FULL_ASSERT \
--DDEBUG_FEEDBACK_ENDPOINT\
-#-DUSE_MCLK_OUT
+-D$(CPU_DEF) \
+# -DDEBUG_FEEDBACK_ENDPOINT 
+# -DUSE_MCLK_OUT 
+
 
 
 # AS includes
@@ -127,7 +137,6 @@ C_INCLUDES =  \
 -Idrivers/CMSIS/Device/ST/STM32F4xx/Include \
 -Idrivers/CMSIS/Include \
 -Idrivers/BSP
-
 
 
 # compile gcc flags
@@ -147,8 +156,6 @@ CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
 #######################################
 # LDFLAGS
 #######################################
-# link script
-LDSCRIPT = STM32F411CEUX_FLASH.ld
 
 # libraries
 LIBS = -lc -lm -lnosys 
