@@ -46,29 +46,29 @@ When the USB Audio DAC device is enumerated on plug-in, it reports its capabilit
 	* MCK is generated internally 
 	* 100uF 6.3V tantalum capacitor across VCC and ground 
 ```
-F4xx	PCM5102A   	LED		UART2 	Description
+F4xx    PCM5102A    LED     UART2   Description
 --------------------------------------------------------------------
-5V		VCC
--		3V3
-GND		GND
-GND		FLT							Filter Select = Normal latency
-GND		DMP							De-emphasis off
-GND		SCL							Generate I2S_MCK internally
-B13		BCK							I2S_BCK (Bit Clock)
-B15		DIN							I2S_SDI (Data Input)
-B12		LCK							I2S_WS (LR Clock)
-GND		FMT							Format = I2S
-B8		XMT							Software Mute control
-A6	 	-							I2S_MCK (not generated)
+5V      VCC
+-       3V3
+GND     GND
+GND     FLT                         Filter Select = Normal latency
+GND     DMP                         De-emphasis off
+GND     SCL                         Generate I2S_MCK internally
+B13     BCK                         I2S_BCK (Bit Clock)
+B15     DIN                         I2S_SDI (Data Input)
+B12     LCK                         I2S_WS (LR Clock)
+GND     FMT                         Format = I2S
+B8      XMT                         Software Mute control
+A6      -                           I2S_MCK (N.C.)
 --------------------------------------------------------------------
-B3		   			RED				96kHz
-B6		   			GRN				48kHz
-B9		   			BLU				44.1kHz
-C13		 		on-board			Diagnostic/Error
+B3                 RED              Fs=96kHz
+B6                 GRN              Fs=48kHz
+B9                 BLU              Fs=44.1kHz
+C13             on-board            Diagnostic/Error
 --------------------------------------------------------------------
-A2							TX	Serial debug
-A3							RX
-GND							GND
+A2                         TX       Serial debug
+A3                         RX
+GND                        GND
 --------------------------------------------------------------------
 ```    
 
