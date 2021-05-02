@@ -71,7 +71,7 @@ A3                         RX
 GND                        GND
 PA0                                 KEY button. Triggers endpoint  
                                     feedback printout if enabled with  
-									DEBUG_FEEDBACK_ENDPOINT
+                                    DEBUG_FEEDBACK_ENDPOINT
 --------------------------------------------------------------------
 ```    
 
