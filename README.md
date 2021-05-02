@@ -69,6 +69,9 @@ C13             on-board            Diagnostic/Error
 A2                         TX       Serial debug
 A3                         RX
 GND                        GND
+PA0                                 KEY button. Triggers endpoint  
+                                    feedback printout if enabled with  
+									DEBUG_FEEDBACK_ENDPOINT
 --------------------------------------------------------------------
 ```    
 
