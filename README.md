@@ -33,8 +33,8 @@ When the USB Audio DAC device is enumerated on plug-in, it reports its capabilit
 
 ## Software Development Environment
 * Ubuntu 20.04 AMDx64
-* STM32CubeIDE v1.5.1 (makefile project)
-* STM32 F4 library v1.25.2
+* STM32CubeIDE v1.6.0 (makefile project)
+* STM32 F4 library v1.26.1
 
 ## Hardware
 
