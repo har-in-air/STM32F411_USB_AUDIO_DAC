@@ -86,7 +86,7 @@ USBD_DescriptorsTypeDef AUDIO_Desc = {
 __ALIGN_BEGIN   uint8_t USBD_DeviceDesc[USB_LEN_DEV_DESC] __ALIGN_END = {
   0x12,                       /* bLength */
   USB_DESC_TYPE_DEVICE,       /* bDescriptorType */
-  0x10,                       /* bcdUSB version (1.1) */
+  0x01,                       /* bcdUSB version (1.1) */
   0x01,
   0x00,                       /* bDeviceClass */
   0x00,                       /* bDeviceSubClass */
