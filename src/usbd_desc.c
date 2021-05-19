@@ -86,8 +86,8 @@ USBD_DescriptorsTypeDef AUDIO_Desc = {
 __ALIGN_BEGIN   uint8_t USBD_DeviceDesc[USB_LEN_DEV_DESC] __ALIGN_END = {
   0x12,                       /* bLength */
   USB_DESC_TYPE_DEVICE,       /* bDescriptorType */
-  0x00,                       /* bcdUSB */
-  0x02,
+  0x10,                       /* bcdUSB version (1.1) */
+  0x01,
   0x00,                       /* bDeviceClass */
   0x00,                       /* bDeviceSubClass */
   0x00,                       /* bDeviceProtocol */
@@ -96,8 +96,8 @@ __ALIGN_BEGIN   uint8_t USBD_DeviceDesc[USB_LEN_DEV_DESC] __ALIGN_END = {
   HIBYTE(USBD_VID),           /* idVendor */
   LOBYTE(USBD_PID),           /* idVendor */
   HIBYTE(USBD_PID),           /* idVendor */
-  0x00,                       /* bcdDevice rel. 2.00 */
-  0x02,
+  0x00,                       /* bcdDevice version 1.00 */
+  0x01,
   USBD_IDX_MFC_STR,           /* Index of manufacturer string */
   USBD_IDX_PRODUCT_STR,       /* Index of product string */
   USBD_IDX_SERIAL_STR,        /* Index of serial number string */
