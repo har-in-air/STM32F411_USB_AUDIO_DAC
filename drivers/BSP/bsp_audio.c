@@ -35,26 +35,25 @@ void BSP_AUDIO_OUT_ChangeAudioConfig(uint32_t AudioOutOption);
   * @brief  Configures the audio peripherals.
   * @param  Volume: Initial volume level (from 0 (Mute) to 100 (Max))
   * @param  AudioFreq: Audio frequency used to play the audio stream.
+  * @param  options : 1 for mute on, 0 for mute off
   * @retval AUDIO_OK if correct communication, else wrong communication
   */
-uint8_t BSP_AUDIO_OUT_Init(uint8_t Volume, uint32_t AudioFreq) {
+uint8_t BSP_AUDIO_OUT_Init(int16_t volume, uint32_t audioFreq, uint8_t options) {
 	I2Sx_DeInit();
-	BSP_AUDIO_OUT_ClockConfig(&haudio_i2s, AudioFreq, NULL);
+	BSP_AUDIO_OUT_ClockConfig(&haudio_i2s, audioFreq, NULL);
 
 	haudio_i2s.Instance = AUDIO_I2Sx;
 	if(HAL_I2S_GetState(&haudio_i2s) == HAL_I2S_STATE_RESET) {
 		BSP_AUDIO_OUT_MspInit(&haudio_i2s, NULL);
 		}
-	I2Sx_Init(AudioFreq);
-
-	GPIO_InitTypeDef  gpio_init_structure = {0};
-	gpio_init_structure.Pin   = AUDIO_MUTE_PIN;
-	gpio_init_structure.Mode  = GPIO_MODE_OUTPUT_PP;
-	gpio_init_structure.Pull  = GPIO_NOPULL;
-	gpio_init_structure.Speed = GPIO_SPEED_LOW;
-	AUDIO_MUTE_PORT_ENABLE();
-	HAL_GPIO_Init(AUDIO_MUTE_PORT, &gpio_init_structure);
-	HAL_GPIO_WritePin(AUDIO_MUTE_PORT, AUDIO_MUTE_PIN, GPIO_PIN_SET); // init in unmuted state
+	I2Sx_Init(audioFreq);
+	if (options){
+		AUDIO_MUTE_ON();
+		}
+	else {
+		AUDIO_MUTE_OFF();
+		}
+	BSP_AUDIO_OUT_SetVolume(volume);
 	return AUDIO_OK;
 	}
 
@@ -67,10 +66,6 @@ uint8_t BSP_AUDIO_OUT_Init(uint8_t Volume, uint32_t AudioFreq) {
 void BSP_AUDIO_OUT_DeInit(void) {
 	I2Sx_DeInit();
 	BSP_AUDIO_OUT_MspDeInit(&haudio_i2s, NULL);
-	GPIO_InitTypeDef  gpio_init_structure = {0};
-	gpio_init_structure.Pin = AUDIO_MUTE_PIN;
-	HAL_GPIO_WritePin(AUDIO_MUTE_PORT, AUDIO_MUTE_PIN, GPIO_PIN_SET);
-	HAL_GPIO_DeInit(AUDIO_MUTE_PORT, gpio_init_structure.Pin);
 	}
 
 
@@ -81,14 +76,14 @@ void BSP_AUDIO_OUT_DeInit(void) {
   * @retval AUDIO_OK if correct communication, else wrong communication
   */
 uint8_t BSP_AUDIO_OUT_Play(uint16_t* pBuffer, uint32_t Size) {
-  uint8_t ret = AUDIO_OK;
-  // I2s transmit of 24bit data requires number of words
-  if (HAL_I2S_Transmit_DMA(&haudio_i2s, pBuffer, Size/4) != HAL_OK)    {
-      ret = AUDIO_ERROR;
-    }   
-	HAL_GPIO_WritePin(AUDIO_MUTE_PORT, AUDIO_MUTE_PIN, GPIO_PIN_SET);
-  return ret;
-}
+	uint8_t ret = AUDIO_OK;
+	AUDIO_MUTE_OFF();
+	// I2s transmit of 24bit data requires number of words
+	if (HAL_I2S_Transmit_DMA(&haudio_i2s, pBuffer, Size/4) != HAL_OK)    {
+		ret = AUDIO_ERROR;
+    	}
+	return ret;
+	}
 
 
 /**
@@ -97,9 +92,9 @@ uint8_t BSP_AUDIO_OUT_Play(uint16_t* pBuffer, uint32_t Size) {
   * @param  Size: number of bytes to be written
   */
 void BSP_AUDIO_OUT_ChangeBuffer(uint16_t *pData, uint16_t Size){
-  // I2s transmit of 24bit data requires number of words
-  HAL_I2S_Transmit_DMA(&haudio_i2s, pData, Size/4 );
-}
+	// I2s transmit of 24bit data requires number of words
+	HAL_I2S_Transmit_DMA(&haudio_i2s, pData, Size/4 );
+	}
 
 
 /**
@@ -111,13 +106,13 @@ void BSP_AUDIO_OUT_ChangeBuffer(uint16_t *pData, uint16_t Size){
   * @retval  AUDIO_OK if correct communication, else wrong communication
   */
 uint8_t BSP_AUDIO_OUT_Pause(void) {
-  uint8_t ret = AUDIO_OK;
-  if (HAL_I2S_DMAPause(&haudio_i2s) != HAL_OK)    {
-    ret =  AUDIO_ERROR;
-    }
-	HAL_GPIO_WritePin(AUDIO_MUTE_PORT, AUDIO_MUTE_PIN, GPIO_PIN_RESET);
-  return ret;
-}
+	uint8_t ret = AUDIO_OK;
+	if (HAL_I2S_DMAPause(&haudio_i2s) != HAL_OK)    {
+		ret =  AUDIO_ERROR;
+    	}
+	AUDIO_MUTE_ON();
+	return ret;
+	}
 
 
 /**
@@ -129,13 +124,13 @@ uint8_t BSP_AUDIO_OUT_Pause(void) {
   * @retval AUDIO_OK if correct communication, else wrong communication
   */
 uint8_t BSP_AUDIO_OUT_Resume(void) {
-uint8_t ret = AUDIO_OK;
-  if (HAL_I2S_DMAResume(&haudio_i2s)!= HAL_OK)    {
-    ret =  AUDIO_ERROR;
-    }
-	HAL_GPIO_WritePin(AUDIO_MUTE_PORT, AUDIO_MUTE_PIN, GPIO_PIN_SET);
-  return ret;
-}
+	uint8_t ret = AUDIO_OK;
+	if (HAL_I2S_DMAResume(&haudio_i2s)!= HAL_OK)    {
+		ret =  AUDIO_ERROR;
+    	}
+	AUDIO_MUTE_OFF();
+	return ret;
+	}
 
 
 /**
@@ -143,28 +138,22 @@ uint8_t ret = AUDIO_OK;
   * @retval AUDIO_OK if correct communication, else wrong communication
   */
 uint8_t BSP_AUDIO_OUT_Stop(void) {
-uint8_t ret = AUDIO_OK;
-  if (HAL_I2S_DMAStop(&haudio_i2s) != HAL_OK)    {
-    ret = AUDIO_ERROR;
-    }
-	HAL_GPIO_WritePin(AUDIO_MUTE_PORT, AUDIO_MUTE_PIN, GPIO_PIN_RESET);
-  return ret;
-}
+	uint8_t ret = AUDIO_OK;
+	if (HAL_I2S_DMAStop(&haudio_i2s) != HAL_OK)    {
+		ret = AUDIO_ERROR;
+    	}
+	AUDIO_MUTE_ON();
+	return ret;
+	}
 
 
 /**
   * @brief  Controls the current audio volume level.
-  * @param  Volume: Volume level to be set in percentage from 0% to 100% (0 for
-  *         Mute and 100 for Max volume level).
+  * @param  Volume: Volume level to be set in percentage from 0% to 100%
   * @retval AUDIO_OK if correct communication, else wrong communication
   */
-uint8_t BSP_AUDIO_OUT_SetVolume(uint8_t Volume){
-	if (Volume == 0) {
-		HAL_GPIO_WritePin(AUDIO_MUTE_PORT, AUDIO_MUTE_PIN, GPIO_PIN_RESET);
-		}
-	else {
-		HAL_GPIO_WritePin(AUDIO_MUTE_PORT, AUDIO_MUTE_PIN, GPIO_PIN_SET);
-		}
+uint8_t BSP_AUDIO_OUT_SetVolume(int16_t volume){
+	// volume control is implemented by scaling the data, in usbd_audio.c
 	return AUDIO_OK;
 	}
 
@@ -175,12 +164,12 @@ uint8_t BSP_AUDIO_OUT_SetVolume(uint8_t Volume){
   *         unmute the codec and restore previous volume level.
   * @retval AUDIO_OK if correct communication, else wrong communication
   */
-uint8_t BSP_AUDIO_OUT_SetMute(uint32_t Cmd) {
-	if (Cmd == AUDIO_MUTE_ON) {
-		HAL_GPIO_WritePin(AUDIO_MUTE_PORT, AUDIO_MUTE_PIN, GPIO_PIN_RESET);
+uint8_t BSP_AUDIO_OUT_SetMute(uint8_t mute) {
+	if (mute) {
+		AUDIO_MUTE_ON();
 		}
 	else {
-		HAL_GPIO_WritePin(AUDIO_MUTE_PORT, AUDIO_MUTE_PIN, GPIO_PIN_SET);
+		AUDIO_MUTE_OFF();
 		}
 	return AUDIO_OK;
 	}
@@ -281,10 +270,11 @@ __weak void BSP_AUDIO_OUT_Error_CallBack(void){}
   * @brief  Initializes BSP_AUDIO_OUT MSP.
   * @param  
   * @param  Params : pointer on additional configuration parameters, can be NULL.
-    // PA6     ------> I2S2_MCK
-    // PB12     ------> I2S2_WS
-    // PB13     ------> I2S2_CK
-    // PB15     ------> I2S2_SD
+    // PA6   - I2S2_MCK
+    // PB12  - I2S2_WS
+    // PB13  - I2S2_CK
+    // PB15  - I2S2_SD
+    // PB8   - PCM5102A mute
   */
 __weak void BSP_AUDIO_OUT_MspInit(I2S_HandleTypeDef *hi2s, void *Params)
 {
@@ -310,7 +300,16 @@ __weak void BSP_AUDIO_OUT_MspInit(I2S_HandleTypeDef *hi2s, void *Params)
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
     GPIO_InitStruct.Alternate = GPIO_AF5_SPI2;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-  
+
+    // PCM5102A mute gpio pin interface (mute =0, unmute=1)
+	AUDIO_MUTE_PORT_ENABLE();
+	GPIO_InitTypeDef  gpio_init_structure = {0};
+	gpio_init_structure.Pin   = AUDIO_MUTE_PIN;
+	gpio_init_structure.Mode  = GPIO_MODE_OUTPUT_PP;
+	gpio_init_structure.Pull  = GPIO_NOPULL;
+	gpio_init_structure.Speed = GPIO_SPEED_LOW;
+	HAL_GPIO_Init(AUDIO_MUTE_PORT, &gpio_init_structure);
+
   __HAL_RCC_DMA1_CLK_ENABLE();
     
   if(hi2s->Instance == SPI2)  {
@@ -360,7 +359,11 @@ __weak void BSP_AUDIO_OUT_MspDeInit(I2S_HandleTypeDef *hi2s, void *Params)
   GPIO_InitStruct.Pin = GPIO_PIN_6;
   HAL_GPIO_DeInit(GPIOA, GPIO_InitStruct.Pin); 
 #endif
-  }
+	AUDIO_MUTE_ON();
+	GPIO_InitTypeDef  gpio_init_structure = {0};
+	gpio_init_structure.Pin = AUDIO_MUTE_PIN;
+	HAL_GPIO_DeInit(AUDIO_MUTE_PORT, gpio_init_structure.Pin);
+  	}
 
 
 /**

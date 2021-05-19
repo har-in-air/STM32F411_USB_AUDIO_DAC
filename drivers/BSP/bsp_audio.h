@@ -26,12 +26,13 @@ extern const I2S_CLK_CONFIG I2S_Clk_Config24[];
 #define BSP_AUDIO_OUT_STEREOMODE        ((uint32_t)0x00000004) /* STEREO MODE          */
 #define BSP_AUDIO_OUT_MONOMODE          ((uint32_t)0x00000008) /* MONO MODE            */
 
-#define AUDIO_MUTE_ON                 1
-#define AUDIO_MUTE_OFF                0
 
 #define AUDIO_MUTE_PIN						GPIO_PIN_8
 #define AUDIO_MUTE_PORT						GPIOB
 #define AUDIO_MUTE_PORT_ENABLE()		    __HAL_RCC_GPIOB_CLK_ENABLE()
+#define AUDIO_MUTE_ON() 					HAL_GPIO_WritePin(AUDIO_MUTE_PORT, AUDIO_MUTE_PIN, GPIO_PIN_RESET)
+#define AUDIO_MUTE_OFF() 					HAL_GPIO_WritePin(AUDIO_MUTE_PORT, AUDIO_MUTE_PIN, GPIO_PIN_SET)
+
 
 /* I2S peripheral configuration defines */
 #define AUDIO_I2Sx                          SPI2
@@ -68,15 +69,15 @@ extern const I2S_CLK_CONFIG I2S_Clk_Config24[];
 #define AUDIO_TIMEOUT                       ((uint8_t)2)
 
 
-uint8_t BSP_AUDIO_OUT_Init(uint8_t Volume, uint32_t AudioFreq);
-uint8_t BSP_AUDIO_OUT_Play(uint16_t* pBuffer, uint32_t Size);
-void    BSP_AUDIO_OUT_ChangeBuffer(uint16_t *pData, uint16_t Size);
+uint8_t BSP_AUDIO_OUT_Init(int16_t volume, uint32_t audioFreq, uint8_t options);
+uint8_t BSP_AUDIO_OUT_Play(uint16_t* pBuffer, uint32_t size);
+void    BSP_AUDIO_OUT_ChangeBuffer(uint16_t *pData, uint16_t size);
 uint8_t BSP_AUDIO_OUT_Pause(void);
 uint8_t BSP_AUDIO_OUT_Resume(void);
 uint8_t BSP_AUDIO_OUT_Stop(void);
-uint8_t BSP_AUDIO_OUT_SetVolume(uint8_t Volume);
-void    BSP_AUDIO_OUT_SetFrequency(uint32_t AudioFreq);
-uint8_t BSP_AUDIO_OUT_SetMute(uint32_t Cmd);
+uint8_t BSP_AUDIO_OUT_SetVolume(int16_t volume);
+void    BSP_AUDIO_OUT_SetFrequency(uint32_t audioFreq);
+uint8_t BSP_AUDIO_OUT_SetMute(uint8_t mute);
 void    BSP_AUDIO_OUT_DeInit(void);
 uint32_t BSP_AUDIO_OUT_GetRemainingDataSize(void);
 

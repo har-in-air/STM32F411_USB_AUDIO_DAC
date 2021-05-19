@@ -46,10 +46,10 @@
 #include "bsp_audio.h"
 
 
-static int8_t Audio_Init(uint32_t AudioFreq, uint32_t Volume, uint32_t options);
-static int8_t Audio_DeInit(uint32_t options);
+static int8_t Audio_Init(uint32_t audioFreq, int16_t volume, uint8_t options);
+static int8_t Audio_DeInit(uint8_t options);
 static int8_t Audio_PlaybackCmd(uint16_t* pbuf, uint32_t size, uint8_t cmd);
-static int8_t Audio_VolumeCtl(uint8_t vol);
+static int8_t Audio_VolumeCtl(int16_t volume);
 static int8_t Audio_MuteCtl(uint8_t cmd);
 static int8_t Audio_PeriodicTC(uint8_t cmd);
 static int8_t Audio_GetState(void);
@@ -70,17 +70,16 @@ USBD_AUDIO_ItfTypeDef USBD_AUDIO_fops = {
 /**
  * @brief  Initializes the AUDIO media low layer.
  * @param  AudioFreq: Audio frequency used to play the audio stream.
- * @param  Volume: Initial volume level (from 0 (Mute) to 100 (Max))
- * @param  options: Reserved for future use
+ * @param  Volume: Initial volume level : 0 (Min) to 100 (Max)
+ * @param  options: 1 => Mute On, 0 = Mute off
  * @retval Result of the operation: USBD_OK if all operations are OK else
  * USBD_FAIL
  */
-static int8_t Audio_Init(uint32_t AudioFreq, uint32_t Volume, uint32_t options)
-{
-  audio_status.frequency = AudioFreq;
-  BSP_AUDIO_OUT_Init(Volume, AudioFreq);
-  return 0;
-}
+static int8_t Audio_Init(uint32_t audioFreq, int16_t volume, uint8_t options) {
+	audio_status.frequency = audioFreq;
+	BSP_AUDIO_OUT_Init(volume, audioFreq, options);
+	return 0;
+	}
 
 /**
  * @brief  De-Initializes the AUDIO media low layer.
@@ -88,12 +87,11 @@ static int8_t Audio_Init(uint32_t AudioFreq, uint32_t Volume, uint32_t options)
  * @retval Result of the operation: USBD_OK if all operations are OK else
  * USBD_FAIL
  */
-static int8_t Audio_DeInit(uint32_t options)
-{
-  audio_status.playing = 0U;
-  BSP_AUDIO_OUT_Stop();
-  return 0;
-}
+static int8_t Audio_DeInit(uint8_t options){
+	audio_status.playing = 0U;
+	BSP_AUDIO_OUT_Stop();
+  	return 0;
+	}
 
 /**
  * @brief  Handles AUDIO command.
@@ -103,45 +101,43 @@ static int8_t Audio_DeInit(uint32_t options)
  * @retval Result of the operation: USBD_OK if all operations are OK else
  * USBD_FAIL
  */
-static int8_t Audio_PlaybackCmd(uint16_t* pbuf, uint32_t size, uint8_t cmd)
-{
-  switch (cmd) {
-    case AUDIO_CMD_START:
-      BSP_AUDIO_OUT_Play(pbuf, size);
-      audio_status.playing = 1U;
-      break;
+static int8_t Audio_PlaybackCmd(uint16_t* pbuf, uint32_t size, uint8_t cmd){
+	switch (cmd) {
+		case AUDIO_CMD_START:
+		  BSP_AUDIO_OUT_Play(pbuf, size);
+		  audio_status.playing = 1U;
+		  break;
 
-    case AUDIO_CMD_PLAY:
-      BSP_AUDIO_OUT_ChangeBuffer(pbuf, size);
-      audio_status.playing = 1U;
-      break;
-  }
-  return 0;
-}
+		case AUDIO_CMD_PLAY:
+		  BSP_AUDIO_OUT_ChangeBuffer(pbuf, size);
+		  audio_status.playing = 1U;
+		  break;
+		}
+	return 0;
+	}
 
 /**
  * @brief  Controls AUDIO Volume.
- * @param  vol: Volume level (0..100)
+ * @param  volume : USB Spec 0x8200 (-126dB) ... 0x0000 (0dB max)
  * @retval Result of the operation: USBD_OK if all operations are OK else
  * USBD_FAIL
  */
-static int8_t Audio_VolumeCtl(uint8_t vol)
-{
-  BSP_AUDIO_OUT_SetVolume(vol);
-  return 0;
-}
+static int8_t Audio_VolumeCtl(int16_t vol){
+	//BSP_AUDIO_OUT_SetVolume(vol);
+	// Volume control implemented in usbd_audio.c
+	return 0;
+	}
 
 /**
  * @brief  Controls AUDIO Mute.
- * @param  cmd: Command opcode
+ * @param  mute: 1 = muted, 0 = unmuted
  * @retval Result of the operation: USBD_OK if all operations are OK else
  * USBD_FAIL
  */
-static int8_t Audio_MuteCtl(uint8_t cmd)
-{
-  BSP_AUDIO_OUT_SetMute(cmd);
-  return 0;
-}
+static int8_t Audio_MuteCtl(uint8_t mute){
+	BSP_AUDIO_OUT_SetMute(mute);
+	return 0;
+	}
 
 /**
  * @brief  Audio_PeriodicTC
@@ -149,10 +145,9 @@ static int8_t Audio_MuteCtl(uint8_t cmd)
  * @retval Result of the operation: USBD_OK if all operations are OK else
  * USBD_FAIL
  */
-static int8_t Audio_PeriodicTC(uint8_t cmd)
-{
-  return 0;
-}
+static int8_t Audio_PeriodicTC(uint8_t cmd){
+	return 0;
+	}
 
 /**
  * @brief  Gets AUDIO State.
@@ -160,10 +155,9 @@ static int8_t Audio_PeriodicTC(uint8_t cmd)
  * @retval Result of the operation: USBD_OK if all operations are OK else
  * USBD_FAIL
  */
-static int8_t Audio_GetState(void)
-{
-  return 0;
-}
+static int8_t Audio_GetState(void){
+	return 0;
+	}
 
 /**
  * @brief  Manages the DMA full Transfer complete event.

@@ -35,22 +35,30 @@
 #define USBD_AUDIO_FREQ_MAX                           96000U
 #endif
 
-/* Volume. See UAC Spec 1.0 p.77 */
-#ifndef USBD_AUDIO_VOL_DEFAULT
-#define USBD_AUDIO_VOL_DEFAULT                        0x8d00U
-#endif
+// See USB Device Class Definition for Audio Devices v1.0 p.77
+ // max volume is 0dB, this is to avoid clipping
+ #ifndef USBD_AUDIO_VOL_MAX
+ #define USBD_AUDIO_VOL_MAX                            0x0000U
+ #endif
 
-#ifndef USBD_AUDIO_VOL_MAX
-#define USBD_AUDIO_VOL_MAX                            0x0000U
-#endif
+ //0x100 = 1dB, 0x8200 = -32256 =  -126dB
+ #ifndef USBD_AUDIO_VOL_MIN
+ #define USBD_AUDIO_VOL_MIN                            0x8200U
+ #endif
 
-#ifndef USBD_AUDIO_VOL_MIN
-#define USBD_AUDIO_VOL_MIN                            0x8100U
-#endif
+ #ifndef USBD_AUDIO_VOL_DEFAULT
+ #define USBD_AUDIO_VOL_DEFAULT                        0x8D00U
+ #endif
 
-#ifndef USBD_AUDIO_VOL_STEP
-#define USBD_AUDIO_VOL_STEP                           0x0100U
-#endif /* Total number of steps can't be too many, host will complain. */
+ // 6dB step resolution
+ #ifndef USBD_AUDIO_VOL_STEP
+ #define USBD_AUDIO_VOL_STEP                           0x0600U
+ #endif
+
+ // default mute state is on (muted)
+#ifndef USBD_AUDIO_MUTE_DEFAULT
+#define USBD_AUDIO_MUTE_DEFAULT                     	0x00U
+#endif
 
 /* Interface */
 #ifndef USBD_MAX_NUM_INTERFACES
@@ -188,17 +196,19 @@ typedef struct
   uint16_t                  wr_ptr;
   uint32_t                  freq;
   uint32_t                  bit_depth;
-  int16_t                   vol;
+  int16_t                   volume;
+  int32_t                   vol_6dB_shift; // number of 6dB attenuation steps
+  uint8_t                   mute;
   USBD_AUDIO_ControlTypeDef control;
 } USBD_AUDIO_HandleTypeDef;
 
 
 typedef struct
 {
-    int8_t  (*Init)         (uint32_t  AudioFreq, uint32_t Volume, uint32_t options);
-    int8_t  (*DeInit)       (uint32_t options);
+    int8_t  (*Init)         (uint32_t  AudioFreq, int16_t Volume, uint8_t options);
+    int8_t  (*DeInit)       (uint8_t options);
     int8_t  (*AudioCmd)     (uint16_t* pbuf, uint32_t size, uint8_t cmd);
-    int8_t  (*VolumeCtl)    (uint8_t vol);
+    int8_t  (*VolumeCtl)    (int16_t vol);
     int8_t  (*MuteCtl)      (uint8_t cmd);
     int8_t  (*PeriodicTC)   (uint8_t cmd);
     int8_t  (*GetState)     (void);
