@@ -293,7 +293,7 @@ volatile uint32_t fnsof = 0;
 static int32_t USBD_AUDIO_Get_Vol6dB_Shift(int16_t volume ){
 	if (volume < (int16_t)USBD_AUDIO_VOL_MIN) volume = (int16_t)USBD_AUDIO_VOL_MIN;
 	if (volume > (int16_t)USBD_AUDIO_VOL_MAX) volume = (int16_t)USBD_AUDIO_VOL_MAX;
-	return (int32_t)((int16_t)USBD_AUDIO_VOL_MAX - volume)/(int16_t)USBD_AUDIO_VOL_STEP;
+	return (int32_t)((((int16_t)USBD_AUDIO_VOL_MAX - volume) + (int16_t)USBD_AUDIO_VOL_STEP/2)/(int16_t)USBD_AUDIO_VOL_STEP);
 	}
 
 /**
