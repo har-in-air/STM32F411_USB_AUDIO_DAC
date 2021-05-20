@@ -24,7 +24,7 @@
   *             - sampling rate: 44.1kHz, 48kHz, 96kHz
   *             - Bit resolution: 24
   *             - Number of channels: 2
-  *             - Volume control max=0dB, min=-126dB, 3dB attenuation steps
+  *             - Volume control max=0dB, min=-96dB, 3dB attenuation steps
   *             - Mute/Unmute
   *             - Asynchronous Endpoints
   *             - Endpoint for Sampling frequency DbgFeedbackHistory 10.14 3bytes
@@ -715,13 +715,13 @@ inline int32_t USBD_AUDIO_Volume_Ctrl(int32_t sample, int32_t shift_3dB){
 	int32_t shift_6dB = shift_3dB>>1;
 
 	if (shift_3dB & 1) {
-	    // odd volume step - add half
+	    // shift_3dB is odd, implement 6dB shift and compensate
 	    shift_6dB++;
         sample_atten >>= shift_6dB;
         sample_atten += (sample_atten>>1);
 	    }
 	else{
-	    // even volume step, 6dB shift
+	    // shift_3dB is even, implement with 6dB shift
 	    sample_atten >>= shift_6dB;
 		}
 	return sample_atten;
@@ -741,7 +741,6 @@ inline int32_t USBD_AUDIO_Volume_Ctrl(int32_t sample, int32_t shift_3dB){
 
 // volume control is implemented by scaling the data, attenuation resolution is 3dB.
 // 6dB is equivalent to a shift right by 1 bit.
-// Max volume is 0dB, Min volume is -126dB
 
 // outgoing I2S Philips data format is : left-aligned 24bits in 32bit frame, MSbyte first
 // STM32 I2S peripheral uses a 16bit data register

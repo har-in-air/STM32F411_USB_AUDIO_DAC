@@ -262,11 +262,10 @@ USBD_StatusTypeDef USBD_LL_Init(USBD_HandleTypeDef *pdev)
   /* Initialize LL Driver */
   HAL_PCD_Init(&hpcd);
   
-  /* Set Rx FIFO */
-//  HAL_PCDEx_SetRxFiFo(&hpcd, 0xf0);
-  HAL_PCDEx_SetRxFiFo(&hpcd, 0x130);
+  // USB fifos share 1.25kB memory = 0x140 words
+  HAL_PCDEx_SetRxFiFo(&hpcd, 0x120);
   /* Set Tx0 FIFO (for EP0 IN) */
-  //HAL_PCDEx_SetTxFiFo(&hpcd, 0, 0x40);
+  HAL_PCDEx_SetTxFiFo(&hpcd, 0, 0x10);
   /* Set Tx1 FIFO (for EP1 IN) */
   HAL_PCDEx_SetTxFiFo(&hpcd, 1, 0x10);
   

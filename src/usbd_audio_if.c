@@ -118,7 +118,7 @@ static int8_t Audio_PlaybackCmd(uint16_t* pbuf, uint32_t size, uint8_t cmd){
 
 /**
  * @brief  Controls AUDIO Volume.
- * @param  volume : USB Spec 0x8200 (-126dB) ... 0x0000 (0dB max)
+ * @param  volume : USB Spec 0x8000 (-128dB) ... 0x0000 (0dB max)
  * @retval Result of the operation: USBD_OK if all operations are OK else
  * USBD_FAIL
  */
