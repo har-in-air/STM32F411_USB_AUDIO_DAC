@@ -41,18 +41,18 @@
  #define USBD_AUDIO_VOL_MAX                            0x0000U
  #endif
 
- //0x100 = 1dB, 0x8200 = -32256 =  -126dB
+ // 1dB <=> 0x100, -96dB = 0xA000
  #ifndef USBD_AUDIO_VOL_MIN
- #define USBD_AUDIO_VOL_MIN                            0x8200U
+ #define USBD_AUDIO_VOL_MIN                            0xA000U
  #endif
 
  #ifndef USBD_AUDIO_VOL_DEFAULT
- #define USBD_AUDIO_VOL_DEFAULT                        0x8D00U
+ #define USBD_AUDIO_VOL_DEFAULT                        0xA000U
  #endif
 
- // 6dB step resolution
+ // 3dB step resolution
  #ifndef USBD_AUDIO_VOL_STEP
- #define USBD_AUDIO_VOL_STEP                           0x0600U
+ #define USBD_AUDIO_VOL_STEP                           0x0300U
  #endif
 
  // default mute state is on (muted)
@@ -197,15 +197,15 @@ typedef struct
   uint32_t                  freq;
   uint32_t                  bit_depth;
   int16_t                   volume;
-  int32_t                   vol_6dB_shift; // number of 6dB attenuation steps
-  uint8_t                   mute;
+  int32_t                   vol_3dB_shift; // 3dB attenuation steps equivalent to volume setting
+  uint8_t                   mute; // 0 = unmuted, 1 = muted
   USBD_AUDIO_ControlTypeDef control;
 } USBD_AUDIO_HandleTypeDef;
 
 
 typedef struct
 {
-    int8_t  (*Init)         (uint32_t  AudioFreq, int16_t Volume, uint8_t options);
+    int8_t  (*Init)         (uint32_t  audioFreq, int16_t volume, uint8_t options);
     int8_t  (*DeInit)       (uint8_t options);
     int8_t  (*AudioCmd)     (uint16_t* pbuf, uint32_t size, uint8_t cmd);
     int8_t  (*VolumeCtl)    (int16_t vol);

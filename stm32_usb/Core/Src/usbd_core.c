@@ -535,19 +535,3 @@ USBD_StatusTypeDef USBD_LL_DevDisconnected(USBD_HandleTypeDef  *pdev)
 
   return USBD_OK;
 }
-/**
-* @}
-*/
-
-
-/**
-* @}
-*/
-
-
-/**
-* @}
-*/
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
-

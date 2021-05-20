@@ -25,21 +25,8 @@
  extern "C" {
 #endif
 
-/* Includes ------------------------------------------------------------------*/
 #include "usbd_conf.h"
 
-/** @addtogroup STM32_USBD_DEVICE_LIBRARY
-  * @{
-  */
-
-/** @defgroup USB_DEF
-  * @brief general defines for the usb device library file
-  * @{
-  */
-
-/** @defgroup USB_DEF_Exported_Defines
-  * @{
-  */
 
 #ifndef NULL
 #define NULL                                            0U
@@ -150,10 +137,6 @@
 #define USBD_EP_TYPE_INTR                               0x03U
 
 
-/**
-  * @}
-  */
-
 
 /** @defgroup USBD_DEF_Exported_TypesDefinitions
   * @{
@@ -161,7 +144,6 @@
 
 typedef  struct  usb_setup_req
 {
-
     uint8_t   bmRequest;
     uint8_t   bRequest;
     uint16_t  wValue;
@@ -263,10 +245,6 @@ typedef struct _USBD_HandleTypeDef
   void                    *pData;
 } USBD_HandleTypeDef;
 
-/**
-  * @}
-  */
-
 
 
 /** @defgroup USBD_DEF_Exported_Macros
@@ -309,37 +287,9 @@ typedef struct _USBD_HandleTypeDef
 #endif /* __GNUC__ */
 
 
-/**
-  * @}
-  */
-
-/** @defgroup USBD_DEF_Exported_Variables
-  * @{
-  */
-
-/**
-  * @}
-  */
-
-/** @defgroup USBD_DEF_Exported_FunctionsPrototype
-  * @{
-  */
-
-/**
-  * @}
-  */
-
 #ifdef __cplusplus
 }
 #endif
 
 #endif /* __USBD_DEF_H */
 
-/**
-  * @}
-  */
-
-/**
-* @}
-*/
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

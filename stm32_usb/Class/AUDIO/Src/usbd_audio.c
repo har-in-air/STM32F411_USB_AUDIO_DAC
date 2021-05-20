@@ -24,8 +24,8 @@
   *             - sampling rate: 44.1kHz, 48kHz, 96kHz
   *             - Bit resolution: 24
   *             - Number of channels: 2
-  *             - Volume control
-  *             - Mute/Unmute capability
+  *             - Volume control max=0dB, min=-126dB, 3dB attenuation steps
+  *             - Mute/Unmute
   *             - Asynchronous Endpoints
   *             - Endpoint for Sampling frequency DbgFeedbackHistory 10.14 3bytes
   ******************************************************************************
@@ -69,7 +69,7 @@ static void AUDIO_REQ_GetRes(USBD_HandleTypeDef* pdev, USBD_SetupReqTypedef* req
 static void AUDIO_REQ_SetCurrent(USBD_HandleTypeDef* pdev, USBD_SetupReqTypedef* req);
 static void AUDIO_OUT_StopAndReset(USBD_HandleTypeDef* pdev);
 static void AUDIO_OUT_Restart(USBD_HandleTypeDef* pdev);
-static int32_t USBD_AUDIO_Get_Vol6dB_Shift(int16_t volume);
+static int32_t USBD_AUDIO_Get_Vol3dB_Shift(int16_t volume);
 
 
 USBD_ClassTypeDef USBD_AUDIO = {
@@ -289,8 +289,8 @@ volatile uint8_t fb_data[3] = {
 // FNSOF is critical for frequency changing to work
 volatile uint32_t fnsof = 0;
 
-// volume attenuation is from 0dB (max volume, 0x0000) to -126dB (min volume, 0x8200) in 6dB steps
-static int32_t USBD_AUDIO_Get_Vol6dB_Shift(int16_t volume ){
+// volume attenuation is from 0dB (max volume, 0x0000) to -126dB (min volume, 0x8200) in 3dB steps
+static int32_t USBD_AUDIO_Get_Vol3dB_Shift(int16_t volume ){
 	if (volume < (int16_t)USBD_AUDIO_VOL_MIN) volume = (int16_t)USBD_AUDIO_VOL_MIN;
 	if (volume > (int16_t)USBD_AUDIO_VOL_MAX) volume = (int16_t)USBD_AUDIO_VOL_MAX;
 	return (int32_t)((((int16_t)USBD_AUDIO_VOL_MAX - volume) + (int16_t)USBD_AUDIO_VOL_STEP/2)/(int16_t)USBD_AUDIO_VOL_STEP);
@@ -339,7 +339,7 @@ static uint8_t USBD_AUDIO_Init(USBD_HandleTypeDef* pdev, uint8_t cfgidx)
     haudio->freq = USBD_AUDIO_FREQ_DEFAULT;
     haudio->bit_depth = USBD_AUDIO_BIT_DEPTH_DEFAULT;
     haudio->volume = USBD_AUDIO_VOL_DEFAULT;
-    haudio->vol_6dB_shift = USBD_AUDIO_Get_Vol6dB_Shift(USBD_AUDIO_VOL_DEFAULT);
+    haudio->vol_3dB_shift = USBD_AUDIO_Get_Vol3dB_Shift(USBD_AUDIO_VOL_DEFAULT);
     haudio->mute = USBD_AUDIO_MUTE_DEFAULT;
 
     // Initialize the Audio output Hardware layer
@@ -543,7 +543,7 @@ volatile uint32_t  DbgMaxWritableSamples = 0;
 volatile uint32_t  DbgSofHistory[256] = {0};
 volatile uint32_t  DbgWritableSampleHistory[256] = {0};
 volatile float     DbgFeedbackHistory[256] = {0};
-volatile uint8_t   DbgIndex = 0; // rollover every 256 entries
+volatile uint8_t   DbgIndex = 0; // roll over every 256 entries
 static volatile uint32_t  DbgSofCounter = 0;
 #endif
 
@@ -708,6 +708,25 @@ typedef  union UN32_ {
 	int32_t s;
 } UN32;
 
+// ref : https://www.microchip.com/forums/m932509.aspx
+
+inline int32_t USBD_AUDIO_Volume_Ctrl(int32_t sample, int32_t shift_3dB){
+	int32_t sample_atten = sample;
+	int32_t shift_6dB = shift_3dB>>1;
+
+	if (shift_3dB & 1) {
+	    // odd volume step - add half
+	    shift_6dB++;
+        sample_atten >>= shift_6dB;
+        sample_atten += (sample_atten>>1);
+	    }
+	else{
+	    // even volume step, 6dB shift
+	    sample_atten >>= shift_6dB;
+		}
+	return sample_atten;
+	}
+
 
 /**
   * @brief  USBD_AUDIO_DataOut
@@ -720,8 +739,9 @@ typedef  union UN32_ {
 // Each 24bit stereo sample is encoded as : L channel 3bytes + R channel 3bytes, LSbyte first
 // b0:lo_L, b1:mid_L, b2:hi_L, b3:lo_R, b4:mid_R, b5:hi_R
 
-// volume control is implemented by scaling the data, each shift = 6dB of attenuation.
-// maximum attenuation is -126dB (shift by 21) and minimum attenuation (max volume) is 0dB
+// volume control is implemented by scaling the data, attenuation resolution is 3dB.
+// 6dB is equivalent to a shift right by 1 bit.
+// Max volume is 0dB, Min volume is -126dB
 
 // outgoing I2S Philips data format is : left-aligned 24bits in 32bit frame, MSbyte first
 // STM32 I2S peripheral uses a 16bit data register
@@ -750,8 +770,7 @@ static uint8_t USBD_AUDIO_DataOut(USBD_HandleTypeDef* pdev,  uint8_t epnum){
 			sample.b[1] = tmpbuf[tmpbuf_ptr+1];
 			sample.b[2] = tmpbuf[tmpbuf_ptr+2]; // msb
 			sample.b[3] = sample.b[2] & 0x80 ? 0xFF : 0x00; // sign extend to 32bits
-
-			sample.s >>= haudio->vol_6dB_shift;
+			sample.s = USBD_AUDIO_Volume_Ctrl(sample.s,haudio->vol_3dB_shift);
 
 			haudio->buffer[haudio->wr_ptr++] = (((uint16_t)sample.b[2]) << 8) | (uint16_t)sample.b[1];
 			haudio->buffer[haudio->wr_ptr++] = ((uint16_t)sample.b[0]) << 8;
@@ -761,7 +780,7 @@ static uint8_t USBD_AUDIO_DataOut(USBD_HandleTypeDef* pdev,  uint8_t epnum){
 			sample.b[2] = tmpbuf[tmpbuf_ptr+5]; // msb
 			sample.b[3] = sample.b[2] & 0x80 ? 0xFF : 0x00; // sign extend to 32bits
 
-			sample.s >>= haudio->vol_6dB_shift;
+			sample.s = USBD_AUDIO_Volume_Ctrl(sample.s,haudio->vol_3dB_shift);
 
 			haudio->buffer[haudio->wr_ptr++] = (((uint16_t)sample.b[2]) << 8) | (uint16_t)sample.b[1];
 			haudio->buffer[haudio->wr_ptr++] = ((uint16_t)sample.b[0]) << 8;
@@ -949,7 +968,7 @@ static uint8_t USBD_AUDIO_EP0_RxReady(USBD_HandleTypeDef* pdev)
         case AUDIO_CONTROL_REQ_FU_VOL: {
           int16_t volume = *(int16_t*)&haudio->control.data[0];
           haudio->volume = volume;
-          haudio->vol_6dB_shift = USBD_AUDIO_Get_Vol6dB_Shift(volume);
+          haudio->vol_3dB_shift = USBD_AUDIO_Get_Vol3dB_Shift(volume);
           ((USBD_AUDIO_ItfTypeDef*)pdev->pUserData)->VolumeCtl(volume);
         };
             break;
