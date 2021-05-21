@@ -6,6 +6,7 @@
 * Isochronous with endpoint feedback (3bytes, 10.14 format) to synchronize sampling frequency Fs
 * Bus powered
 * Supports 24-bit audio streams with Fs = 44.1kHz, 48kHz or 96kHz
+* USB Audio Volume (0dB to -96dB, 3dB steps) and Mute control 
 * I2S master output with I2S Philips standard 24/32 data frame
 * Optional MCLK output generation
 * Uses inexpensive Aliexpress-sourced STM32F4xx "Black Pill" and PCM5102A modules.
@@ -32,17 +33,22 @@ When the USB Audio DAC device is enumerated on plug-in, it reports its capabilit
 
 ## Software Development Environment
 * Ubuntu 20.04 AMDx64
-* STM32CubeIDE v1.6.0 (makefile project)
+* STM32CubeIDE v1.6.0
 * STM32 F4 library v1.26.1
+* Makefile project. Edit makefile flags to
+  * Select STM32F411 or STM32F401
+  * Enable MCLK output generation
+  * Enable diagnostic printout on serial UART port 
 
 ## Hardware
 
 * WeAct STM32F411CEU6 or STM32F401CCU6 "Black Pill" development board
-	* I2S_2 peripheral interface generates WS, BCK and SDO. 
-	* LEDs to indicate sampling frequency and diagnostic/errors.
-	* UART2 serial interface for debug information
+	* I2S_2 peripheral interface generates WS, BCK, SDO and optionally MCK
+	* external R,G,B LEDs indicate sampling frequency
+	* On-board LED for diagnostic status
+	* UART2 serial interface for diagnostic information
 * PCM5102A I2S DAC module
-	* MCK is generated internally 
+	* configured to generate MCK internally 
 	* 100uF 6.3V tantalum capacitor across VCC and ground 
 ```
 F4xx    PCM5102A    LED     UART2   Description
@@ -57,13 +63,13 @@ B13     BCK                         I2S_BCK (Bit Clock)
 B15     DIN                         I2S_SDI (Data Input)
 B12     LCK                         I2S_WS (LR Clock)
 GND     FMT                         Format = I2S
-B8      XMT                         Software Mute control
-A6      -                           I2S_MCK (N.C.)
+B8      XMT                         Mute control
+A6      -                           I2S_MCK (not used)
 --------------------------------------------------------------------
-B3                 RED              Fs=96kHz
-B6                 GRN              Fs=48kHz
-B9                 BLU              Fs=44.1kHz
-C13             on-board            Diagnostic/Error
+B3                 RED              Fs = 96kHz
+B6                 GRN              Fs = 48kHz
+B9                 BLU              Fs = 44.1kHz
+C13             on-board            Diagnostic
 --------------------------------------------------------------------
 A2                         TX       Serial debug
 A3                         RX
