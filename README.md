@@ -8,9 +8,9 @@
 * Supports 24-bit audio streams with Fs = 44.1kHz, 48kHz or 96kHz
 * USB Audio Volume (0dB to -96dB, 3dB steps) and Mute control 
 * I2S master output with I2S Philips standard 24/32 data frame
-* Optional MCLK output generation
 * Uses inexpensive Aliexpress-sourced STM32F4xx "Black Pill" and PCM5102A modules.
 * Build support (Makefile option) for STM32F401CCU6 and STM32F411CEU6 boards 
+* Optional MCLK output generation on STM32F411
 
 I now understand why there is a market for audiophile DACs with higher end headphones. I was given a pair of used Grado SR60 headphones a long time ago and
 was unimpressed. With my laptop and smartphone headphone outputs they didn't sound great compared to my budget earbuds. In fact, they were lacking in bass response. And they are bulky, with a heavy cable. So they've been in a cupboard for the past 16-17 years.
@@ -37,7 +37,7 @@ When the USB Audio DAC device is enumerated on plug-in, it reports its capabilit
 * STM32 F4 library v1.26.1
 * Makefile project. Edit makefile flags to
   * Select STM32F411 or STM32F401
-  * Enable MCLK output generation
+  * Enable MCLK output generation (STM32F411 only)
   * Enable diagnostic printout on serial UART port 
 
 ## Hardware

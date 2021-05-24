@@ -4,7 +4,7 @@
 
 const uint32_t I2SFreq[3] = {44100, 48000, 96000};
 
-#ifdef USE_MCLK_OUT // Makefile compile flag
+#if defined(STM32F411xE) && defined(USE_MCLK_OUT) // Makefile compile flag
 
 const I2S_CLK_CONFIG I2S_Clk_Config24[3]  = {
 {271, 2, 6, 0, 0x0B06EAB0}, // 44.1081
@@ -270,7 +270,7 @@ __weak void BSP_AUDIO_OUT_Error_CallBack(void){}
   * @brief  Initializes BSP_AUDIO_OUT MSP.
   * @param  
   * @param  Params : pointer on additional configuration parameters, can be NULL.
-    // PA6   - I2S2_MCK
+    // PA6   - I2S2_MCK (only on STM32F411)
     // PB12  - I2S2_WS
     // PB13  - I2S2_CK
     // PB15  - I2S2_SD
@@ -283,7 +283,7 @@ __weak void BSP_AUDIO_OUT_MspInit(I2S_HandleTypeDef *hi2s, void *Params)
     __HAL_RCC_SPI2_CLK_ENABLE();
     __HAL_RCC_GPIOB_CLK_ENABLE();
 
-#ifdef USE_MCLK_OUT
+#if defined(STM32F411xE) && defined(USE_MCLK_OUT)
     __HAL_RCC_GPIOA_CLK_ENABLE();
 
     GPIO_InitStruct.Pin = GPIO_PIN_6;
@@ -354,7 +354,7 @@ __weak void BSP_AUDIO_OUT_MspDeInit(I2S_HandleTypeDef *hi2s, void *Params)
   GPIO_InitStruct.Pin = GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_15;
   HAL_GPIO_DeInit(GPIOB, GPIO_InitStruct.Pin);
 
-#ifdef USE_MCLK_OUT
+#if defined(STM32F411xE) && defined(USE_MCLK_OUT)
   //I2S pins configuration: MCK pin
   GPIO_InitStruct.Pin = GPIO_PIN_6;
   HAL_GPIO_DeInit(GPIOA, GPIO_InitStruct.Pin); 
@@ -385,10 +385,12 @@ __weak void BSP_AUDIO_OUT_ClockConfig(I2S_HandleTypeDef *hi2s, uint32_t AudioFre
 	  	  }
   	  }
   uint32_t N, R, I2SDIV, ODD, MCKOE, I2S_PR;
+#ifdef STM32F411xE
 #ifdef USE_MCLK_OUT
     MCKOE = 1;
 #else        
     MCKOE = 0;
+#endif
 #endif
     // PLLI2S_VCO = f(VCO clock) = f(PLLI2S clock input)  (PLLI2SN/PLLM)
     // I2SCLK = f(PLLI2S clock output) = f(VCO clock) / PLLI2SR
@@ -468,7 +470,7 @@ static void I2Sx_Init(uint32_t AudioFreq) {
   haudio_i2s.Init.AudioFreq = AudioFreq;
   haudio_i2s.Init.CPOL = I2S_CPOL_LOW;
   haudio_i2s.Init.ClockSource = I2S_CLOCK_PLL;
-#ifdef USE_MCLK_OUT
+#if defined(STM32F411xE) && defined(USE_MCLK_OUT)
   haudio_i2s.Init.MCLKOutput = I2S_MCLKOUTPUT_ENABLE;
 #endif
   haudio_i2s.Init.FullDuplexMode = I2S_FULLDUPLEXMODE_DISABLE;  
