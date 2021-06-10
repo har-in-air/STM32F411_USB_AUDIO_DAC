@@ -46,8 +46,8 @@
 #include "usbd_desc.h"
 #include "usbd_conf.h"
 
-#define USBD_VID                      0x0483
-#define USBD_PID                      0x5730
+#define USBD_VID                      0x6666 // prototyping 
+#define USBD_PID                      0x1234 // random value
 #define USBD_LANGID_STRING            0x409
 #define USBD_MANUFACTURER_STRING      "STM32 Black Pill"
 #define USBD_PRODUCT_HS_STRING        "PCM5102A DAC"
@@ -86,8 +86,8 @@ USBD_DescriptorsTypeDef AUDIO_Desc = {
 __ALIGN_BEGIN   uint8_t USBD_DeviceDesc[USB_LEN_DEV_DESC] __ALIGN_END = {
   0x12,                       /* bLength */
   USB_DESC_TYPE_DEVICE,       /* bDescriptorType */
-  0x10,                       /* bcdUSB version (1.1) */
-  0x01,
+  0x00,                       /* bcdUSB version (2.00) minor and subminor .00 */
+  0x02,                       /* bcdUSB version major number 2 */
   0x00,                       /* bDeviceClass */
   0x00,                       /* bDeviceSubClass */
   0x00,                       /* bDeviceProtocol */
