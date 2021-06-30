@@ -384,8 +384,9 @@ __weak void BSP_AUDIO_OUT_ClockConfig(I2S_HandleTypeDef *hi2s, uint32_t AudioFre
 		  break;
 	  	  }
   	  }
-  uint32_t N, R, I2SDIV, ODD, MCKOE, I2S_PR;
+  uint32_t N, R, I2SDIV, ODD, I2S_PR;
 #ifdef STM32F411xE
+  uint32_t MCKOE;
 #ifdef USE_MCLK_OUT
     MCKOE = 1;
 #else        
@@ -409,7 +410,11 @@ __weak void BSP_AUDIO_OUT_ClockConfig(I2S_HandleTypeDef *hi2s, uint32_t AudioFre
     RCC_ExCLKInitStruct.PLLI2S.PLLI2SN = N;  
     RCC_ExCLKInitStruct.PLLI2S.PLLI2SR = R;  
     HAL_RCCEx_PeriphCLKConfig(&RCC_ExCLKInitStruct);     
+#ifdef STM32F411xE
     I2S_PR = (MCKOE<<9) | (ODD<<8) | I2SDIV;
+#else
+    I2S_PR = (ODD<<8) | I2SDIV;
+#endif
     I2S_Config_I2SPR(I2S_PR);
     } 
   else { // Default PLL I2S configuration for 96000 Hz 24bit
@@ -425,7 +430,11 @@ __weak void BSP_AUDIO_OUT_ClockConfig(I2S_HandleTypeDef *hi2s, uint32_t AudioFre
     RCC_ExCLKInitStruct.PLLI2S.PLLI2SN = N;
     RCC_ExCLKInitStruct.PLLI2S.PLLI2SR = R;
     HAL_RCCEx_PeriphCLKConfig(&RCC_ExCLKInitStruct); 
+#ifdef STM32F411xE
     I2S_PR = (MCKOE<<9) | (ODD<<8) | I2SDIV;
+#else
+    I2S_PR = (ODD<<8) | I2SDIV;
+#endif
     I2S_Config_I2SPR(I2S_PR);
   }
 }

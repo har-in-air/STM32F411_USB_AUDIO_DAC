@@ -289,7 +289,7 @@ volatile uint8_t fb_data[3] = {
 // FNSOF is critical for frequency changing to work
 volatile uint32_t fnsof = 0;
 
-// volume attenuation is from 0dB (max volume, 0x0000) to -126dB (min volume, 0x8200) in 3dB steps
+// volume attenuation is from 0dB (max volume, 0x0000) to -96dB (min volume, 0xA000) in 3dB steps
 static int32_t USBD_AUDIO_Get_Vol3dB_Shift(int16_t volume ){
 	if (volume < (int16_t)USBD_AUDIO_VOL_MIN) volume = (int16_t)USBD_AUDIO_VOL_MIN;
 	if (volume > (int16_t)USBD_AUDIO_VOL_MAX) volume = (int16_t)USBD_AUDIO_VOL_MAX;
