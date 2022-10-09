@@ -1,6 +1,6 @@
 # STM32F4xx "Black Pill" USB to I2S DAC Audio Bridge
 
-## Features
+
 
 * USB Full Speed Class 1 Audio device, no special drivers needed
 * Isochronous with endpoint feedback (3bytes, 10.14 format) to synchronize sampling frequency Fs
@@ -27,11 +27,11 @@ are back in service.
 
 When the USB Audio DAC device is enumerated on plug-in, it reports its capabilities (audio class, sampling frequency options, bit depth). If you configure the audio device driver optimally, a native 96kHZ 24bit audio file will play unmodified, while a 44.1kHz or 48kHz 16bit stream will be resized to 24bits and resampled to 96kHz. And yes, even 44.1kHz/16bit MP3 files sound much better when played back via the USB DAC. I'm not sure why - the PCM5102A isn't marketed as an "audiophile" component, but it obviously can drive high-quality headphones much better than standard laptop/smartphone DAC components.
 
-## Credits
+# Credits
 * [Dragonman USB Audio project](https://github.com/dragonman225/stm32f469-usbaudio)
 * [Endpoint feedback](https://www.microchip.com/forums/m547546.aspx)
 
-## Software Development Environment
+# Software Development Environment
 * Ubuntu 20.04 AMDx64
 * STM32CubeIDE v1.6.0
 * STM32 F4 library v1.26.1
@@ -40,7 +40,7 @@ When the USB Audio DAC device is enumerated on plug-in, it reports its capabilit
   * Enable MCLK output generation (STM32F411 only)
   * Enable diagnostic printout on serial UART port 
 
-## Hardware
+# Hardware
 
 * WeAct STM32F411CEU6 or STM32F401CCU6 "Black Pill" development board
 	* I2S_2 peripheral interface generates WS, BCK, SDO and optionally MCK
@@ -82,7 +82,7 @@ PA0                                 KEY button. Triggers endpoint
 
 <img src="docs/prototype.jpg" />
 
-## Checking USB Audio device on Ubuntu 20.04
+# Checking USB Audio device on Ubuntu 20.04
 
 * Execute `lsusb` with and without the USB-Audio DAC plugged in, you should see the 
   new USB device
@@ -101,9 +101,9 @@ PA0                                 KEY button. Triggers endpoint
 
 <img src="docs/stream.png" />
 
-## Optimizing Pulseaudio on Ubuntu 20.04 for USB-Audio DAC
+# Optimizing Pulseaudio on Ubuntu 20.04
 
-* Edit `/etc/pulse/daemon.conf` as root
+Edit `/etc/pulse/daemon.conf` as root
 * Force re-sampling to 96kHz
 * Resize to 24bits
 * Use highest quality re-sampling algorithm
@@ -111,14 +111,19 @@ PA0                                 KEY button. Triggers endpoint
 
 <img src="docs/pulseaudio_config.png" />
 
-## Optimizing Windows 10 for USB-Audio DAC
+# Optimizing Windows 10
 
-* Use the Control Panel Sound playback device properties dialog
+Control Panel Sound playback device properties dialog
 
 <img src="docs/win10_96kHz_24bit.png" />
 
+# Optimizing Android
+After using customization settings in Poweramp music player on a Samsung Galaxy F62 :
 
-## Endpoint Feedback mechanism
+<img src="docs/android_poweramp_1.jpg">
+<img src="docs/android_poweramp_2.jpg">
+
+# Endpoint Feedback mechanism
 
 <img src="docs/feedback_endpoint_spec.png" />
 
