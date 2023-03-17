@@ -697,10 +697,19 @@ static uint8_t USBD_AUDIO_IsoINIncomplete(USBD_HandleTypeDef* pdev, uint8_t epnu
   * @param  epnum: endpoint index
   * @retval status
   */
-static uint8_t USBD_AUDIO_IsoOutIncomplete(USBD_HandleTypeDef* pdev, uint8_t epnum)
-{
-  return USBD_OK;
-}
+// Fix suggested by Andrew to restart audio (fix Windows problem ?)
+static uint8_t USBD_AUDIO_IsoOutIncomplete(USBD_HandleTypeDef* pdev, uint8_t epnum){
+	UNUSED(epnum);
+	USBD_AUDIO_HandleTypeDef *haudio;
+	haudio = (USBD_AUDIO_HandleTypeDef*)pdev->pClassData;
+
+	USBD_LL_FlushEP(pdev, AUDIO_OUT_EP);
+
+	/* Prepare Out endpoint to receive next audio packet */
+	(void)USBD_LL_PrepareReceive(pdev, AUDIO_OUT_EP, (uint8_t *)&haudio->buffer[haudio->wr_ptr], AUDIO_OUT_PACKET_24B);
+
+	return (uint8_t)USBD_OK;
+	}
 
 
 typedef  union UN32_ {
