@@ -28,9 +28,9 @@ For a "budget audiophile" experience, try the Venus Electronics Monk Plus in-ear
 * [Endpoint feedback](https://www.microchip.com/forums/m547546.aspx)
 
 # Software Development Environment
-* Ubuntu 20.04 AMDx64
-* STM32CubeIDE v1.6.0
-* STM32 F4 library v1.26.1
+* Ubuntu 22.04 AMDx64
+* STM32CubeIDE v1.12.0
+* STM32 F4 library v1.27.1
 * Makefile project. Edit makefile flags to
   * Select STM32F411 or STM32F401
   * Enable MCLK output generation (STM32F411 only)
