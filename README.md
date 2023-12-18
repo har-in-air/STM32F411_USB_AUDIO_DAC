@@ -107,6 +107,37 @@ Edit `/etc/pulse/daemon.conf` as root
 
 <img src="docs/pulseaudio_config.png" />
 
+# Pipewire on Ubuntu 22.04LTS
+
+Copy `/etc/pipewire/pipewire.conf` to `~/.config/pipewire/pipewire.conf`. Change the setting of
+the default clock rate in context.properties :
+
+```
+    default.clock.rate          = 96000
+```
+
+Log out and after logging back in, play back an audio file via the USB DAC. Run
+the command :
+
+```
+pactl list sinks
+```
+
+You should see confirmation that the audio is being resampled to 24bits and a sample rate of 96kHz.
+
+```
+...
+Sink #54
+	State: RUNNING
+	Name: alsa_output.usb-STM32_Black_Pill_PCM5102A_DAC_327F368E3334-00.iec958-stereo
+	Description: PCM5102A DAC Digital Stereo (IEC958)
+	Driver: PipeWire
+	Sample Specification: s24le 2ch 96000Hz
+	Channel Map: front-left,front-right
+...
+```
+
+
 # Optimizing Windows 10
 
 Control Panel Sound playback device properties dialog
