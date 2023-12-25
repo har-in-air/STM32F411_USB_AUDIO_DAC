@@ -175,6 +175,13 @@ This is a debug log of changes in Fs due to the implemented mechanism. The first
 
 <img src="docs/endpoint_feedback.png" />
 
+# Latency
+
+I have not measured the actual latency. However, it can be estimated as half the circular buffer size multiplied by the inverse of the sampling frequency. 
+
+You can reduce the latency by reducing the buffer size. On an older system, with external USB storage drives and streaming USB web camera consuming shared USB bandwidth, this could be an issue. With a newer higher performance system and if you only have a USB keyboard and mouse apart from the DAC, this may work without issues. I am using the USB DAC on a laptop with AMD Ryzen 5 2500U and Ubuntu 22.04LTS.
+
+The relevant configuration parameter is AUDIO_OUT_PACKET_NUM in stm32_usb/Class/AUDIO/Inc/usbd_audio.h.
 
 
 
