@@ -179,3 +179,13 @@ This is a debug log of changes in Fs due to the implemented mechanism. The first
 
 <img src="docs/endpoint_feedback.png" />
 
+# Latency
+
+I have not measured the actual latency. A first approximation assuming no protocol overhead is half the circular buffer size (in stereo samples) multiplied by the inverse of the sampling frequency. 
+
+A single stereo sample uses 2x3 = 6 bytes. 
+The estimated latency in seconds is((AUDIO_TOTAL_BUF_SIZE/2) / 6) *  (1/sample_freq_hz)
+
+The relevant configuration parameter is AUDIO_OUT_PACKET_NUM in stm32_usb/Class/AUDIO/Inc/usbd_audio.h.
+
+You can reduce the latency by reducing the buffer size. On an older system, with external USB storage drives and streaming USB web camera consuming shared USB bandwidth, this could be an issue. 
