@@ -122,7 +122,7 @@ C_DEFS =  \
 -DDEBUG_FEEDBACK_ENDPOINT 
 #-DUSE_MCLK_OUT 
 
-
+# Reference manual F411 RM0383 page 585, when MCLK output is enabled, MCLK = 256 x Fs
 
 # AS includes
 AS_INCLUDES = 
