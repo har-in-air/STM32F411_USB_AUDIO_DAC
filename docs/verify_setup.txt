@@ -1,0 +1,190 @@
+hari@hari-MSI:~$ lsusb
+Bus 009 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+Bus 010 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
+Bus 008 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
+Bus 007 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+Bus 006 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
+Bus 005 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+Bus 004 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
+Bus 003 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+Bus 002 Device 003: ID 174c:3074 ASMedia Technology Inc. ASM1074 SuperSpeed hub
+Bus 002 Device 002: ID 2109:0813 VIA Labs, Inc. VL813 Hub
+Bus 002 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
+Bus 001 Device 006: ID 0e8d:0608 MediaTek Inc. Wireless_Device
+Bus 001 Device 004: ID 0db0:0076 Micro Star International MYSTIC LIGHT 
+Bus 001 Device 009: ID 16c0:0487 Van Ooijen Technische Informatica Teensyduino Serial+Keyboard+Mouse+Joystick
+Bus 001 Device 008: ID 17ef:608d Lenovo Optical Mouse
+Bus 001 Device 007: ID 413c:2113 Dell Computer Corp. KB216 Wired Keyboard
+Bus 001 Device 005: ID 1a40:0101 Terminus Technology Inc. Hub
+Bus 001 Device 003: ID 174c:2074 ASMedia Technology Inc. ASM1074 High-Speed hub
+Bus 001 Device 016: ID 6666:1234 Prototype product Vendor ID PCM5102A DAC
+Bus 001 Device 002: ID 2109:2813 VIA Labs, Inc. VL813 Hub
+Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+hari@hari-MSI:~$ aplay -L
+null
+    Discard all samples (playback) or generate zero samples (capture)
+default
+    Playback/recording through the PulseAudio sound server
+samplerate
+    Rate Converter Plugin Using Samplerate Library
+speexrate
+    Rate Converter Plugin Using Speex Resampler
+jack
+    JACK Audio Connection Kit
+oss
+    Open Sound System
+pulse
+    PulseAudio Sound Server
+upmix
+    Plugin for channel upmix (4,6,8)
+vdownmix
+    Plugin for channel downmix (stereo) with a simple spacialization
+hw:CARD=Generic,DEV=3
+    HD-Audio Generic, HDMI 0
+    Direct hardware device without any conversions
+hw:CARD=Generic,DEV=7
+    HD-Audio Generic, HDMI 1
+    Direct hardware device without any conversions
+hw:CARD=Generic,DEV=8
+    HD-Audio Generic, HDMI 2
+    Direct hardware device without any conversions
+hw:CARD=Generic,DEV=9
+    HD-Audio Generic, HDMI 3
+    Direct hardware device without any conversions
+plughw:CARD=Generic,DEV=3
+    HD-Audio Generic, HDMI 0
+    Hardware device with all software conversions
+plughw:CARD=Generic,DEV=7
+    HD-Audio Generic, HDMI 1
+    Hardware device with all software conversions
+plughw:CARD=Generic,DEV=8
+    HD-Audio Generic, HDMI 2
+    Hardware device with all software conversions
+plughw:CARD=Generic,DEV=9
+    HD-Audio Generic, HDMI 3
+    Hardware device with all software conversions
+hdmi:CARD=Generic,DEV=0
+    HD-Audio Generic, HDMI 0
+    HDMI Audio Output
+hdmi:CARD=Generic,DEV=1
+    HD-Audio Generic, HDMI 1
+    HDMI Audio Output
+hdmi:CARD=Generic,DEV=2
+    HD-Audio Generic, HDMI 2
+    HDMI Audio Output
+hdmi:CARD=Generic,DEV=3
+    HD-Audio Generic, HDMI 3
+    HDMI Audio Output
+dmix:CARD=Generic,DEV=3
+    HD-Audio Generic, HDMI 0
+    Direct sample mixing device
+dmix:CARD=Generic,DEV=7
+    HD-Audio Generic, HDMI 1
+    Direct sample mixing device
+dmix:CARD=Generic,DEV=8
+    HD-Audio Generic, HDMI 2
+    Direct sample mixing device
+dmix:CARD=Generic,DEV=9
+    HD-Audio Generic, HDMI 3
+    Direct sample mixing device
+usbstream:CARD=Generic
+    HD-Audio Generic
+    USB Stream Output
+hw:CARD=Generic_1,DEV=0
+    HD-Audio Generic, ALC897 Analog
+    Direct hardware device without any conversions
+plughw:CARD=Generic_1,DEV=0
+    HD-Audio Generic, ALC897 Analog
+    Hardware device with all software conversions
+sysdefault:CARD=Generic_1
+    HD-Audio Generic, ALC897 Analog
+    Default Audio Device
+front:CARD=Generic_1,DEV=0
+    HD-Audio Generic, ALC897 Analog
+    Front output / input
+surround21:CARD=Generic_1,DEV=0
+    HD-Audio Generic, ALC897 Analog
+    2.1 Surround output to Front and Subwoofer speakers
+surround40:CARD=Generic_1,DEV=0
+    HD-Audio Generic, ALC897 Analog
+    4.0 Surround output to Front and Rear speakers
+surround41:CARD=Generic_1,DEV=0
+    HD-Audio Generic, ALC897 Analog
+    4.1 Surround output to Front, Rear and Subwoofer speakers
+surround50:CARD=Generic_1,DEV=0
+    HD-Audio Generic, ALC897 Analog
+    5.0 Surround output to Front, Center and Rear speakers
+surround51:CARD=Generic_1,DEV=0
+    HD-Audio Generic, ALC897 Analog
+    5.1 Surround output to Front, Center, Rear and Subwoofer speakers
+surround71:CARD=Generic_1,DEV=0
+    HD-Audio Generic, ALC897 Analog
+    7.1 Surround output to Front, Center, Side, Rear and Woofer speakers
+dmix:CARD=Generic_1,DEV=0
+    HD-Audio Generic, ALC897 Analog
+    Direct sample mixing device
+usbstream:CARD=Generic_1
+    HD-Audio Generic
+    USB Stream Output
+hw:CARD=DAC,DEV=0
+    PCM5102A DAC, USB Audio
+    Direct hardware device without any conversions
+plughw:CARD=DAC,DEV=0
+    PCM5102A DAC, USB Audio
+    Hardware device with all software conversions
+sysdefault:CARD=DAC
+    PCM5102A DAC, USB Audio
+    Default Audio Device
+front:CARD=DAC,DEV=0
+    PCM5102A DAC, USB Audio
+    Front output / input
+surround21:CARD=DAC,DEV=0
+    PCM5102A DAC, USB Audio
+    2.1 Surround output to Front and Subwoofer speakers
+surround40:CARD=DAC,DEV=0
+    PCM5102A DAC, USB Audio
+    4.0 Surround output to Front and Rear speakers
+surround41:CARD=DAC,DEV=0
+    PCM5102A DAC, USB Audio
+    4.1 Surround output to Front, Rear and Subwoofer speakers
+surround50:CARD=DAC,DEV=0
+    PCM5102A DAC, USB Audio
+    5.0 Surround output to Front, Center and Rear speakers
+surround51:CARD=DAC,DEV=0
+    PCM5102A DAC, USB Audio
+    5.1 Surround output to Front, Center, Rear and Subwoofer speakers
+surround71:CARD=DAC,DEV=0
+    PCM5102A DAC, USB Audio
+    7.1 Surround output to Front, Center, Side, Rear and Woofer speakers
+iec958:CARD=DAC,DEV=0
+    PCM5102A DAC, USB Audio
+    IEC958 (S/PDIF) Digital Audio Output
+dmix:CARD=DAC,DEV=0
+    PCM5102A DAC, USB Audio
+    Direct sample mixing device
+usbstream:CARD=DAC
+    PCM5102A DAC
+    USB Stream Output
+hari@hari-MSI:~$ cat /proc/asound/DAC/stream0
+STM32 Black Pill PCM5102A DAC at usb-0000:0d:00.0-4.1, full speed : USB Audio
+
+Playback:
+  Status: Running
+    Interface = 1
+    Altset = 1
+    Packet Size = 582
+    Momentary freq = 96020 Hz (0x60.0534)
+    Feedback Format = 10.14
+  Interface 1
+    Altset 1
+    Format: S24_3LE
+    Channels: 2
+    Endpoint: 0x01 (1 OUT) (ASYNC)
+    Rates: 44100, 48000, 96000
+    Bits: 24
+    Channel map: FL FR
+    Sync Endpoint: 0x81 (1 IN)
+    Sync EP Interface: 1
+    Sync EP Altset: 1
+    Implicit Feedback Mode: No
+hari@hari-MSI:~$ 

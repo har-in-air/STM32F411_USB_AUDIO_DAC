@@ -44,18 +44,17 @@ with no distortion at higher volumes.
 
 # Software Development Environment
 * Ubuntu 22.04 AMDx64
-* STM32CubeIDE v1.16.0
-* STM32 F4 library v1.28.0 (installed from IDE -> Help -> Manage Embedded Software Packages )
-
+* STM32CubeIDE v1.16.0 for toolchain binaries
+* STM32 F4 firmware library v1.28.0 (installed from IDE -> Help -> Manage Embedded Software Packages )
+* [STLink V2 tools v 1.8.0-1](https://github.com/stlink-org/stlink/releases) for flashing the MCU
 * This is a Makefile project so there is no .ioc project file. Edit flags in `Makefile` to
   * Select STM32F411 or STM32F401
   * Enable MCLK output generation on STM32F411 (optional) 
   * Enable diagnostic printout on serial UART port
-* I used a cheap STlink V2 clone to flash the MCU. It accepted a firmware upgrade from STM32CubeIDE v1.16.0  and still
-  works (YMMV). For the latest STLink/v2 tools, [install from github](https://github.com/stlink-org/stlink/releases).  
-  Connect ONLY the SCK, DIO and GND pins on the STlinkv2 SWD interface. Connect the black pill via USB cable 
+* I used a cheap STLink V2 clone to flash the MCU. It accepted a firmware upgrade from STM32CubeIDE v1.16.0  and still
+  works (YMMV). Connect ONLY the SCK, DIO and GND pins on the STLink V2 SWD interface. Connect the Black Pill via USB cable 
   to the host to supply 5V power to the board. 
-* Ensure the paths to the toolchain binaries (compiler & linker, make, st-flash) are
+* Ensure the paths to the toolchain (compiler & linker, make, st-flash) are
   already in your environment PATH variable. Then open a terminal and invoke make clean, make all, make flash
   to build and download the binary. Check `example_build.txt` in the `docs` directory.
 * If you want to open and build the project in STM32CubeIDE,
@@ -109,22 +108,12 @@ PA0                                 KEY button. Triggers endpoint
 
 # Checking USB Audio device on Ubuntu 22.04
 
-* Execute `lsusb` with and without the USB-Audio DAC plugged in, you should see the 
-  new USB device
-  
-<img src="docs/lsusb.png" />
-  
-* Execute `aplay -L` and look for `PCM5102 DAC`
+Check `docs/verify_setup.txt` for the commands used to verify the setup.
 
-<img src="docs/aplay_output.png" />
+Run the `Settings -> Sound` application and ensure the PCM5102A DAC device
+is selected for playback.
 
-* Run the `Sound` application without the USB-Audio DAC plugged in and check the
-  Speaker/Headphone output options
-* Plug in the USB-Audio DAC and check again, you should see at least one new option.
-  Select this for playing sound output via the USB-Audio DAC
-* Execute `cat /proc/asound/DAC/stream0` when a song is playing
-
-<img src="docs/stream.png" />
+<img src="docs/settings_sound_select_dac.png" />
 
 # Optimizing Pulseaudio on Ubuntu 22.04
 
