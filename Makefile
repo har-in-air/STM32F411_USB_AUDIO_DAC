@@ -22,13 +22,13 @@ C_DEFS =  \
 #-DUSE_MCLK_OUT 
 # Note : MCLK output is only possible on F411 mcu
 
-# This is a pure Makefile project. It does not require the IDE to set up the environment, so
-# ensure the paths to the toolchain binaries are added to your environment PATH variable. 
+# This is a Makefile project. Ensure the paths to the toolchain binaries are added to your environment PATH variable. 
 # E.g. for my specific installation with STM32CubeIDE 1.16.0 on Ubuntu 22.04 LTS, the compiler and tools are at 
 # /opt/st/stm32cubeide_1.16.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.12.3.rel1.linux64_1.0.200.202406132123/tools/bin
 # /opt/st/stm32cubeide_1.16.0/plugins/com.st.stm32cube.ide.mcu.externaltools.make.linux64_2.1.100.202310302056/tools/bin
 # I installed st-flash by downloading the .deb package from https://github.com/stlink-org/stlink/releases 
 # sudo apt install ./stlink_1.8.0-1_amd64.deb
+# Run make clean, make all, make flash in a terminal window to build and flash the MCU
 
 CC = arm-none-eabi-gcc
 AS = arm-none-eabi-gcc -x assembler-with-cpp
