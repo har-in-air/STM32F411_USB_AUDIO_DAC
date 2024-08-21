@@ -1,41 +1,62 @@
-
-######################################
-# target
-######################################
 TARGET = usb_audio_i2s
 
-# To build for STM32F411CEU6 versus STM32F401CCU6
-# set ASM_SOURCES, CPU_DEF and LDSCRIPT below 
+# To build for STM32F411CEU6 versus STM32F401CCU6,
+# set CPU_TARGET, ASM_SOURCES and LDSCRIPT correctly
 
 # STM32F411CEU6 Black Pill (512kB flash, 256kB RAM, 100MHz)
-#CPU_DEF = STM32F411xE
-#ASM_SOURCES =  startup_stm32f411ceux.s
-#LDSCRIPT = STM32F411CEUX_FLASH.ld
+CPU_TARGET = STM32F411xE
+ASM_SOURCES =  startup_stm32f411ceux.s
+LDSCRIPT = STM32F411CEUX_FLASH.ld
 
 # STM32F401CCU6 Black Pill (256kB flash, 64kB RAM, 84MHz)
-CPU_DEF = STM32F401xC 
-ASM_SOURCES = startup_stm32f401ccux.s
-LDSCRIPT = STM32F401CCUX_FLASH.ld
+#CPU_TARGET = STM32F401xC 
+#ASM_SOURCES = startup_stm32f401ccux.s
+#LDSCRIPT = STM32F401CCUX_FLASH.ld
 
+# C defines
+C_DEFS =  \
+-DUSE_HAL_DRIVER \
+-DUSE_FULL_ASSERT \
+-D$(CPU_TARGET)
+#-DDEBUG_FEEDBACK_ENDPOINT 
+#-DUSE_MCLK_OUT 
+# Note : MCLK output is only possible on F411 mcu
 
-######################################
-# building variables
-######################################
-# debug build?
+# This is a pure Makefile project. It does not require the IDE to set up the environment, so
+# ensure the paths to the toolchain binaries are added to your environment PATH variable. 
+# E.g. for my specific installation with STM32CubeIDE 1.16.0 on Ubuntu 22.04 LTS, the compiler and tools are at 
+# /opt/st/stm32cubeide_1.16.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.12.3.rel1.linux64_1.0.200.202406132123/tools/bin
+# /opt/st/stm32cubeide_1.16.0/plugins/com.st.stm32cube.ide.mcu.externaltools.make.linux64_2.1.100.202310302056/tools/bin
+# I installed st-flash by downloading the .deb package from https://github.com/stlink-org/stlink/releases 
+# sudo apt install ./stlink_1.8.0-1_amd64.deb
+
+CC = arm-none-eabi-gcc
+AS = arm-none-eabi-gcc -x assembler-with-cpp
+CP = arm-none-eabi-objcopy
+SZ = arm-none-eabi-size
+
+HEX = $(CP) -O ihex
+BIN = $(CP) -O binary -S
+ 
+#######################################
+# CFLAGS
+#######################################
+CPU = -mcpu=cortex-m4
+
+FPU = -mfpu=fpv4-sp-d16
+
+FLOAT-ABI = -mfloat-abi=hard
+
+MCU = $(CPU) -mthumb $(FPU) $(FLOAT-ABI)
+
+AS_DEFS = 
+AS_INCLUDES = 
+
 DEBUG = 0
-# optimization
 OPT = -O2
 
-#######################################
-# paths
-#######################################
-# Build path
 BUILD_DIR = build
 
-######################################
-# source
-######################################
-# C sources
 C_SOURCES =  \
 src/main.c \
 src/usart.c \
@@ -43,6 +64,13 @@ src/usbd_conf.c \
 src/usbd_desc.c \
 src/usbd_audio_if.c \
 src/stm32f4xx_it.c \
+src/system_stm32f4xx.c \
+drivers/usb/Core/Src/usbd_core.c \
+drivers/usb/Core/Src/usbd_ctlreq.c \
+drivers/usb/Core/Src/usbd_ioreq.c \
+drivers/usb/Class/AUDIO/Src/usbd_audio.c \
+drivers/BSP/bsp_misc.c \
+drivers/BSP/bsp_audio.c \
 drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd.c \
 drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd_ex.c \
 drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.c \
@@ -63,83 +91,19 @@ drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c \
 drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.c \
 drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c \
 drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c \
-drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_exti.c \
-drivers/BSP/bsp_misc.c \
-drivers/BSP/bsp_audio.c \
-src/system_stm32f4xx.c \
-stm32_usb/Core/Src/usbd_core.c \
-stm32_usb/Core/Src/usbd_ctlreq.c \
-stm32_usb/Core/Src/usbd_ioreq.c \
-stm32_usb/Class/AUDIO/Src/usbd_audio.c
+drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_exti.c
 
-
-
-
-#######################################
-# binaries
-#######################################
-PREFIX = arm-none-eabi-
-# The gcc compiler bin path can be either defined in make command via GCC_PATH variable (> make GCC_PATH=xxx)
-# either it can be added to the PATH environment variable.
-ifdef GCC_PATH
-CC = $(GCC_PATH)/$(PREFIX)gcc
-AS = $(GCC_PATH)/$(PREFIX)gcc -x assembler-with-cpp
-CP = $(GCC_PATH)/$(PREFIX)objcopy
-SZ = $(GCC_PATH)/$(PREFIX)size
-else
-CC = $(PREFIX)gcc
-AS = $(PREFIX)gcc -x assembler-with-cpp
-CP = $(PREFIX)objcopy
-SZ = $(PREFIX)size
-endif
-HEX = $(CP) -O ihex
-BIN = $(CP) -O binary -S
- 
-#######################################
-# CFLAGS
-#######################################
-# cpu
-CPU = -mcpu=cortex-m4
-
-# fpu
-FPU = -mfpu=fpv4-sp-d16
-
-# float-abi
-FLOAT-ABI = -mfloat-abi=hard
-
-# mcu
-MCU = $(CPU) -mthumb $(FPU) $(FLOAT-ABI)
-
-# macros for gcc
-# AS defines
-AS_DEFS = 
-
-# C defines
-C_DEFS =  \
--DUSE_HAL_DRIVER \
--DUSE_FULL_ASSERT \
--D$(CPU_DEF) \
--DDEBUG_FEEDBACK_ENDPOINT 
-#-DUSE_MCLK_OUT 
-
-# Reference manual F411 RM0383 page 585, when MCLK output is enabled, MCLK = 256 x Fs
-
-# AS includes
-AS_INCLUDES = 
-
-# C includes
 C_INCLUDES =  \
--Iinc \
--Idrivers/STM32F4xx_HAL_Driver/Inc \
--Idrivers/STM32F4xx_HAL_Driver/Inc/Legacy \
--Istm32_usb/Core/Inc \
--Istm32_usb/Class/AUDIO/Inc \
+-Isrc \
+-Idrivers/BSP \
+-Idrivers/usb/Core/Inc \
+-Idrivers/usb/Class/AUDIO/Inc \
 -Idrivers/CMSIS/Device/ST/STM32F4xx/Include \
 -Idrivers/CMSIS/Include \
--Idrivers/BSP
+-Idrivers/STM32F4xx_HAL_Driver/Inc \
+-Idrivers/STM32F4xx_HAL_Driver/Inc/Legacy
 
 
-# compile gcc flags
 ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
 
 CFLAGS = $(MCU) $(C_DEFS) $(C_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
@@ -153,10 +117,6 @@ endif
 CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
 
 
-#######################################
-# LDFLAGS
-#######################################
-
 # libraries
 LIBS = -lc -lm -lnosys 
 LIBDIR = 
@@ -166,12 +126,10 @@ LDFLAGS = $(MCU) -specs=nano.specs  -u _printf_float -T$(LDSCRIPT) $(LIBDIR) $(L
 all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin
 
 
-#######################################
-# build the application
-#######################################
 # list of objects
 OBJECTS = $(addprefix $(BUILD_DIR)/,$(notdir $(C_SOURCES:.c=.o)))
 vpath %.c $(sort $(dir $(C_SOURCES)))
+
 # list of ASM program objects
 OBJECTS += $(addprefix $(BUILD_DIR)/,$(notdir $(ASM_SOURCES:.s=.o)))
 vpath %.s $(sort $(dir $(ASM_SOURCES)))
@@ -195,21 +153,12 @@ $(BUILD_DIR)/%.bin: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
 $(BUILD_DIR):
 	mkdir $@		
 
-#######################################
-# clean up
-#######################################
 clean:
 	-rm -fR $(BUILD_DIR)
   
-#######################################
-# Flash binary
-#######################################
 flash:
 	-st-flash --reset write $(BUILD_DIR)/$(TARGET).bin 0x08000000
 
-#######################################
 # dependencies
-#######################################
 -include $(wildcard $(BUILD_DIR)/*.d)
 
-# *** EOF ***
