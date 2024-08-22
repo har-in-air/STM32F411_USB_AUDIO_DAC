@@ -76,8 +76,7 @@ with no distortion at higher volumes.
 * PCM5102A I2S DAC module
 	* configured to generate MCK internally 
 * UDA1334ATS I2S DAC module
-  * default board configuration generates MCK internally
-  * default board configuration SF0 and SF1 pins grounded select I2S mode
+  * SF0, SF1, SCLK, PLL, DEEM pin default board  configuration OK, leave open
 * 100uF 16V capacitor and 5V TVS diode in parallel, connected from 5V to ground 
 
 ```
