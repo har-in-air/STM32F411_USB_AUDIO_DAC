@@ -1,14 +1,14 @@
-# STM32F4xx "Black Pill" + PCM5102A USB DAC
-
-* Uses inexpensive [STM32F4xx "Black Pill"](https://stm32-base.org/boards/STM32F411CEU6-WeAct-Black-Pill-V2.0) and PCM5102A modules
+# STM32F4xx "Black Pill" + PCM5102A/UDA1334ATS USB I2S DAC
 
 * USB Full Speed Class 1 Audio device, no driver installation required
 * USB Bus powered
 * Supports 24-bit audio streams with sampling frequency Fs = 44.1kHz, 48kHz or 96kHz
 * USB Audio Volume (0dB to -96dB, 3dB steps) and Mute support
 * Isochronous with endpoint feedback (3bytes, 10.14 format) to synchronize sampling frequency Fs
+* Uses inexpensive [STM32F4xx "Black Pill"](https://stm32-base.org/boards/STM32F411CEU6-WeAct-Black-Pill-V2.0) module
+* Both STM32F401CCU6 or STM32F411CEU6 black pill modules are supported
+* Texas Instruments PCM5102A or Philips UDA1334ATS I2S DAC modules
 * STM32F4xx I2S master output with I2S Philips standard 24/32 data frame
-* Makefile build support for STM32F401CCU6 or STM32F411CEU6 modules 
 * Optional MCLK output generation on STM32F411. As per reference manual RM0383, page 585, 
    when MCLK output is enabled on the STM32F411, MCLK frequency = 256 x Fs
 
@@ -28,8 +28,9 @@ Have a look at this
 [Cambridge Audio website](https://www.cambridgeaudio.com/row/en/blog/our-guide-usb-audio-why-should-i-use-it?fbclid=IwAR33SS0e_jNiQ1tBSOj29KdEOi1mhHn1r87bMg-VyAMmR2NeSmKETod-JkY#:~:text=Class%201%20will%20give%20you,step%20up%20to%20Class%202) 
 comparing a dedicated USB Audio Class 1 DAC to a laptop headphone output. I have to agree with them.
 
-Even 44.1kHz/16bit MP3 files sound much better when played back via the USB DAC. The PCM5102A isn't 
+Even 44.1kHz/16bit MP3 files sound much better when played back via the USB DAC. The Texas Instruments PCM5102A isn't 
 marketed as an "audiophile" component, but it evidently can drive high-quality headphones well.
+Note : The Philips UDA133ATS DAC module works just as well
 
 I normally re-cycle my prototype modules for new projects, but I am now using this setup as a 
 permanent headphone driver.
@@ -48,8 +49,9 @@ with no distortion at higher volumes.
 * STM32 F4 firmware library v1.28.0 (installed from IDE -> Help -> Manage Embedded Software Packages )
 * [STLink V2 tools v 1.8.0-1](https://github.com/stlink-org/stlink/releases) for flashing the MCU
 * This is a Makefile project so there is no .ioc project file. Edit flags in `Makefile` to
-  * Select STM32F411 or STM32F401
+  * Select STM32F411 or STM32F401 MCU
   * Enable MCLK output generation on STM32F411 (optional) 
+  * Select PCM5102A or UDA1334ATS I2S DAC
   * Enable diagnostic printout on serial UART port
 * I used a cheap STLink V2 clone to flash the MCU. It accepted a firmware upgrade from STM32CubeIDE v1.16.0  and still
   works (YMMV). Connect ONLY the SCK, DIO and GND pins on the STLink V2 SWD interface. Connect the Black Pill via USB cable 
@@ -73,35 +75,40 @@ with no distortion at higher volumes.
 	* UART2 serial interface @ 115200baud for diagnostic information
 * PCM5102A I2S DAC module
 	* configured to generate MCK internally 
-	* 100uF 16V capacitor and 5V TVS diode in parallel, connected from VCC to ground 
+* UDA1334ATS I2S DAC module
+  * default board configuration generates MCK internally
+  * default board configuration SF0 and SF1 pins grounded select I2S mode
+* 100uF 16V capacitor and 5V TVS diode in parallel, connected from 5V to ground 
+
 ```
-F4xx    PCM5102A    LED     UART2   Description
---------------------------------------------------------------------
-5V      VCC
--       3V3
-GND     GND
-GND     FLT                         Filter Select = Normal latency
-GND     DMP                         De-emphasis off
-GND     SCL                         Generate I2S_MCK internally
-B13     BCK                         I2S_BCK (Bit Clock)
-B15     DIN                         I2S_SDI (Data Input)
-B12     LCK                         I2S_WS (LR Clock)
-GND     FMT                         Format = I2S
-B8      XMT                         Mute control
-A6      -                           I2S_MCK (not used)
---------------------------------------------------------------------
-B3                 RED              Fs = 96kHz
-B6                 GRN              Fs = 48kHz
-B9                 BLU              Fs = 44.1kHz
-C13             on-board            Diagnostic
---------------------------------------------------------------------
-A2                         TX       Serial debug
-A3                         RX
-GND                        GND
-PA0                                 KEY button. Triggers endpoint  
-                                    feedback printout if enabled with  
-                                    DEBUG_FEEDBACK_ENDPOINT
---------------------------------------------------------------------
+F4xx  PCM5102A  UDA1334ATS  LED   UART2  Description
+-----------------------------------------------------------------------------------------
+5V    VCC       VIN                      
+-     3V3       3V0                      Open           
+GND   GND       GND 
+GND   FLT                                Filter Select = Normal latency
+GND   DMP                                De-emphasis off
+GND   SCL                                Generate I2S_MCK internally
+GND             SF0                      Format = I2S
+GND             SF1                           "
+B13   BCK       BCLK                     I2S_BCK (Bit Clock)
+B15   DIN       DIN                      I2S_SDI (Data Input)
+B12   LCK       WSEL                     I2S_WS (LR Clock)
+GND   FMT                                Format = I2S
+B8    XMT       MUTE                     Mute (active low PCM5102A/active high UDA1334ATS)
+A6    -                                  I2S_MCK (not used)
+------------------------------------------------------------------------------------------
+B3                         RED           Fs = 96kHz
+B6                         GRN           Fs = 48kHz
+B9                         BLU           Fs = 44.1kHz
+C13                     on-board         Diagnostic
+------------------------------------------------------------------------------------------
+A2                                TX     Serial debug
+A3                                RX        "
+GND                               GND       "
+PA0                                      KEY button. Triggers endpoint feedback printout 
+                                         if enabled with DEBUG_FEEDBACK_ENDPOINT
+-----------------------------------------------------------------------------------------
 ```    
 
 <img src="docs/prototype.jpg" />

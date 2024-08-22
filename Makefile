@@ -13,11 +13,16 @@ LDSCRIPT = STM32F411CEUX_FLASH.ld
 #ASM_SOURCES = startup_stm32f401ccux.s
 #LDSCRIPT = STM32F401CCUX_FLASH.ld
 
+# select the output DAC
+# DAC_TARGET = DAC_PCM5102A
+DAC_TARGET = DAC_UDA1334ATS
+
 # C defines
 C_DEFS =  \
 -DUSE_HAL_DRIVER \
 -DUSE_FULL_ASSERT \
--D$(CPU_TARGET)
+-D$(CPU_TARGET) \
+-D$(DAC_TARGET)
 #-DDEBUG_FEEDBACK_ENDPOINT 
 #-DUSE_MCLK_OUT 
 # Note : MCLK output is only possible on F411 mcu
@@ -55,7 +60,7 @@ AS_INCLUDES =
 DEBUG = 0
 OPT = -O2
 
-BUILD_DIR = build
+BUILD_DIR = ./build
 
 C_SOURCES =  \
 src/main.c \
