@@ -1,4 +1,4 @@
-# STM32F4xx "Black Pill" + PCM5102A/UDA1334ATS USB I2S DAC
+# USB Hi-Res Stereo Audio DAC using STM32F4xx "Black Pill" + PCM5102A / UDA1334ATS 
 
 * USB Full Speed Class 1 Audio device, no driver installation required
 * USB Bus powered
