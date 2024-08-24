@@ -26,7 +26,7 @@ comparing a dedicated USB Audio Class 1 DAC to a laptop headphone output. I have
 
 Even 44.1kHz/16bit MP3 files sound much better when played back via the USB DAC. The Texas Instruments PCM5102A isn't 
 marketed as an "audiophile" component, but it evidently can drive high-quality headphones well.
-Note : The Philips UDA133ATS DAC module works just as well - there is some residual background noise when there is no streaming audio, but that could be a wiring issue.
+The Philips UDA133ATS DAC module works just as well.
 
 I normally re-cycle my prototype modules for new projects, but I am now using this setup as a 
 permanent headphone driver.
