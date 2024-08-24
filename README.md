@@ -1,16 +1,12 @@
-# USB Hi-Res Stereo Audio DAC using STM32F4xx "Black Pill" + PCM5102A / UDA1334ATS 
+# USB Hi-Res Stereo Audio DAC using STM32F4xx "Black Pill" and PCM5102A or UDA1334ATS DAC
 
 * USB Full Speed Class 1 Audio device, no driver installation required
 * USB Bus powered
 * Supports 24-bit audio streams with sampling frequency Fs = 44.1kHz, 48kHz or 96kHz
 * USB Audio Volume (0dB to -96dB, 3dB steps) and Mute support
 * Isochronous with endpoint feedback (3bytes, 10.14 format) to synchronize sampling frequency Fs
-* Uses inexpensive [STM32F4xx "Black Pill"](https://stm32-base.org/boards/STM32F411CEU6-WeAct-Black-Pill-V2.0) module
-* Both STM32F401CCU6 or STM32F411CEU6 black pill modules are supported
-* Texas Instruments PCM5102A or Philips UDA1334ATS I2S DAC modules
-* STM32F4xx I2S master output with I2S Philips standard 24/32 data frame
-* Optional MCLK output generation on STM32F411. As per reference manual RM0383, page 585, 
-   when MCLK output is enabled on the STM32F411, MCLK frequency = 256 x Fs
+* Uses inexpensive [STM32F4xx "Black Pill"](https://stm32-base.org/boards/STM32F411CEU6-WeAct-Black-Pill-V2.0) module. Support for STM32F401CCU6 or STM32F411CEU6 black pill modules.
+* Texas Instruments PCM5102A or Philips UDA1334ATS DAC modules
 
 When the USB Audio DAC device is enumerated on plug-in, it reports its capabilities 
 (audio class, sampling frequency options, bit depth). If you configure the host audio 
@@ -45,42 +41,42 @@ with no distortion at higher volumes.
 
 # Software Development Environment
 * Ubuntu 22.04 AMDx64
-* STM32CubeIDE v1.16.0 for toolchain binaries
-* STM32 F4 firmware library v1.28.0 (installed from IDE -> Help -> Manage Embedded Software Packages )
-* [STLink V2 tools v 1.8.0-1](https://github.com/stlink-org/stlink/releases) for flashing the MCU
-* This is a Makefile project so there is no .ioc project file. Edit flags in `Makefile` to
+* STM32CubeIDE v1.16.0 (required only for toolchain binaries)
+* [STLink V2 tools v 1.8.0-1](https://github.com/stlink-org/stlink/releases). Install the .deb package using `sudo apt install xxx.deb`. I used a cheap STLink V2 clone. It accepted a firmware upgrade from STM32CubeIDE v1.16.0 and still works (YMMV). Connect ONLY the SCK, DIO and GND pins on the STLink V2 SWD interface. Connect the Black Pill via USB cable  to the host to supply 5V power.
+
+## Build and flash  from Terminal 
+* The project is a bare bones Makefile project and has now been updated to use a snapshot of CMSIS and HAL code from STM32 F4 firmware library v1.28.0. You do not need to install this library unless you want to create your own F4xx projects using STM32CubeIDE. 
+* Edit flags in `Makefile` to
   * Select STM32F411 or STM32F401 MCU
-  * Enable MCLK output generation on STM32F411 (optional) 
-  * Select PCM5102A or UDA1334ATS I2S DAC
-  * Enable diagnostic printout on serial UART port
-* I used a cheap STLink V2 clone to flash the MCU. It accepted a firmware upgrade from STM32CubeIDE v1.16.0  and still
-  works (YMMV). Connect ONLY the SCK, DIO and GND pins on the STLink V2 SWD interface. Connect the Black Pill via USB cable 
-  to the host to supply 5V power to the board. 
-* Ensure the paths to the toolchain (compiler & linker, make, st-flash) are
-  already in your environment PATH variable. Then open a terminal and invoke make clean, make all, make flash
-  to build and download the binary. Check `example_build.txt` in the `docs` directory.
-* If you want to open and build the project in STM32CubeIDE,
-  copy the project source folder to the STM32CubeIDE workspace directory, then select 
-  "File -> Import -> Existing projects into workspace"  to add the project to your workspace.
-  Copy the Project -> Settings -> C/C++ build -> Environment -> PATH  from any existing STM32CubeIDE project for 
-  the F4xx MCU (create and build a dummy project if you don't have one already). 
+  * Enable MCLK output generation on STM32F411 (optional, for DACs that cannot generate MCK internally from the bit clock) 
+  * Select PCM5102A or UDA1334ATS DAC
+  * Enable diagnostic printout on serial UART port.
+* Add the the paths to the toolchain (compiler & linker, make) to your environment PATH variable. Installing stlinker v2 tools should have
+already added the path to st-flash.
+* Run `make clean`, `make all`, `make flash`
+  to build and flash the binary. Check `docs/example_build.txt`.
+
+## Build and flash from STM32CubeIDE
+ Copy the project source folder to the STM32CubeIDE workspace directory, then select `File -> Import -> Existing projects into workspace`  to add the project to your workspace.
+  
+  Copy `Project -> Settings -> C/C++ build -> Environment -> PATH`  from any existing STM32CubeIDE project for 
+  the F4xx MCU. Create and build a dummy project if you don't have one already. You will have to install the F4 firmware library 1.28.0 package via the `Help -> Manage Embedded Software Packages`.
   Then you can invoke the build  from the IDE. 
   
 # Hardware
 
-* WeAct STM32F411CEU6 or STM32F401CCU6 "Black Pill" development board
-	* I2S_2 peripheral interface generates WS, BCK, SDO (and optionally MCK on the F411 MCU)
-	* external R, G, B LEDs indicate sampling frequency 96kHz, 48kHz, 44.1kHz respectively
-	* On-board LED (pin PC13) for diagnostic status
-	* UART2 serial interface @ 115200baud for diagnostic information
-* PCM5102A I2S DAC module
-	* configured to generate MCK internally 
-* UDA1334ATS I2S DAC module
-  * SF0, SF1, SCLK, PLL, DEEM pin default board  configuration OK, leave open
+* STM32F4xx I2S master output with I2S Philips standard 24/32 data frame
+    * I2S_2 peripheral interface generates WS, BCK, SDO
+    * Optional MCLK output generation on STM32F411. MCLK frequency = 256 x Fs
+* External R, G, B LEDs indicate sampling frequency 96kHz, 48kHz, 44.1kHz respectively
+* On-board LED (pin PC13) for diagnostic status
+* UART2 serial interface @ 115200baud for diagnostic information
+* PCM5102A I2S DAC module : MCK generated internally.
+* UDA1334ATS I2S DAC module : SF0, SF1, SCLK, PLL, DEEM pin default board  configuration OK, leave open. MCK generated internally.
 * 100uF 16V capacitor and 5V TVS diode in parallel, connected from 5V to ground 
 
 ```
-F4xx  PCM5102A  UDA1334ATS  LED   UART2  Description
+F4xx  PCM5102A  UDA1334ATS  LED   UART   Description
 -----------------------------------------------------------------------------------------
 5V    VCC       VIN                      
 -     3V3       3V0                      Open           
@@ -105,7 +101,7 @@ C13                     on-board         Diagnostic
 A2                                TX     Serial debug
 A3                                RX        "
 GND                               GND       "
-PA0                                      KEY button. Triggers endpoint feedback printout 
+A0                                       KEY button. Triggers endpoint feedback printout 
                                          if enabled with DEBUG_FEEDBACK_ENDPOINT
 -----------------------------------------------------------------------------------------
 ```    
