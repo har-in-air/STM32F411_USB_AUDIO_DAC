@@ -45,16 +45,15 @@ with no distortion at higher volumes.
 * [STLink V2 tools v 1.8.0-1](https://github.com/stlink-org/stlink/releases). Install the .deb package using `sudo apt install xxx.deb`. I used a cheap STLink V2 clone. It accepted a firmware upgrade from STM32CubeIDE v1.16.0 and still works (YMMV). Connect ONLY the SCK, DIO and GND pins on the STLink V2 SWD interface. Connect the Black Pill via USB cable  to the host to supply 5V power.
 
 ## Build and flash  from Terminal 
-* The project is a bare bones Makefile project and has now been updated to use a snapshot of CMSIS and HAL code from STM32 F4 firmware library v1.28.0. You do not need to install this library unless you want to create your own F4xx projects using STM32CubeIDE. 
-* Edit flags in `Makefile` to
+* The project is a bare bones Makefile project and includes a snapshot of startup, linker scripts, CMSIS and HAL code from STM32 F4 firmware library v1.28.0. You do not need to install this library unless you want to create your own F4xx projects using STM32CubeIDE. 
+* Edit `Makefile` to
   * Select STM32F411 or STM32F401 MCU
   * Enable MCLK output generation on STM32F411 (optional, for DACs that cannot generate MCK internally from the bit clock) 
   * Select PCM5102A or UDA1334ATS DAC
   * Enable diagnostic printout on serial UART port.
-* Add the the paths to the toolchain (compiler & linker, make) to your environment PATH variable. Installing stlinker v2 tools should have
-already added the path to st-flash.
-* Run `make clean`, `make all`, `make flash`
-  to build and flash the binary. Check `docs/example_build.txt`.
+* Check `docs/example_build.txt` for the build steps :
+    * Add the paths to the toolchain binaries to your environment `PATH` variable. Installing STLink V2 tools should have already added the path to `st-flash`.
+    * Run `make clean`, `make all`, `make flash` to build and flash the binary. 
 
 ## Build and flash from STM32CubeIDE
  Copy the project source folder to the STM32CubeIDE workspace directory, then select `File -> Import -> Existing projects into workspace`  to add the project to your workspace.
