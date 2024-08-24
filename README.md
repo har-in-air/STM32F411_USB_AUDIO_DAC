@@ -51,7 +51,7 @@ with no distortion at higher volumes.
   * Enable MCLK output generation on STM32F411 (optional, for DACs that cannot generate MCK internally from the bit clock) 
   * Select PCM5102A or UDA1334ATS DAC
   * Enable diagnostic printout on serial UART port.
-* Check `docs/example_build.txt` for the build steps :
+* [Check this example](docs/example_build.txt) for the build steps :
     * Add the paths to the toolchain binaries to your environment `PATH` variable. Installing STLink V2 tools should have already added the path to `st-flash`.
     * Run `make clean`, `make all`, `make flash` to build and flash the binary. 
 
@@ -70,8 +70,8 @@ with no distortion at higher volumes.
 * External R, G, B LEDs indicate sampling frequency 96kHz, 48kHz, 44.1kHz respectively
 * On-board LED (pin PC13) for diagnostic status
 * UART2 serial interface @ 115200baud for diagnostic information
-* PCM5102A I2S DAC module : MCK generated internally.
-* UDA1334ATS I2S DAC module : SF0, SF1, SCLK, PLL, DEEM pin default board  configuration OK, leave open. MCK generated internally.
+* [PCM5102A I2S DAC module](docs/dac_pcm5102a.png) : MCK generated internally.
+* [UDA1334ATS I2S DAC module](docs/dac_uda1334ats.png) : SF0, SF1, SCLK, PLL, DEEM pin default board  configuration OK, leave open. MCK generated internally.
 * 100uF 16V capacitor and 5V TVS diode in parallel, connected from 5V to ground 
 
 ```
@@ -109,7 +109,7 @@ A0                                       KEY button. Triggers endpoint feedback 
 
 # Checking USB Audio device on Ubuntu 22.04
 
-Check `docs/verify_setup.txt` for the commands used to verify the setup.
+[Check this example](docs/verify_setup.txt) for the commands used to verify the setup.
 
 Run the `Settings -> Sound` application and ensure the PCM5102A DAC device
 is selected for playback.
