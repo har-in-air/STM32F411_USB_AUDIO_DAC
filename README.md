@@ -26,7 +26,7 @@ comparing a dedicated USB Audio Class 1 DAC to a laptop headphone output. I have
 
 Even 44.1kHz/16bit MP3 files sound much better when played back via the USB DAC. The Texas Instruments PCM5102A isn't 
 marketed as an "audiophile" component, but it evidently can drive high-quality headphones well.
-The Philips UDA133ATS DAC module works just as well.
+The Philips UDA1334ATS DAC module works just as well.
 
 I normally re-cycle my prototype modules for new projects, but I am now using this setup as a 
 permanent headphone driver.
@@ -42,13 +42,13 @@ with no distortion at higher volumes.
 # Software Development Environment
 * Ubuntu 22.04 AMDx64
 * STM32CubeIDE v1.16.0 (required only for toolchain binaries)
-* [STLink V2 tools v 1.8.0-1](https://github.com/stlink-org/stlink/releases). Install the .deb package using `sudo apt install xxx.deb`. I used a cheap STLink V2 clone. It accepted a firmware upgrade from STM32CubeIDE v1.16.0 and still works (YMMV). Connect ONLY the SCK, DIO and GND pins on the STLink V2 SWD interface. Connect the Black Pill via USB cable  to the host to supply 5V power.
+* [STLink V2 tools](https://github.com/stlink-org/stlink/releases). Install the .deb package using `sudo apt install xxx.deb`. I used a cheap STLink V2 clone. It accepted a firmware upgrade from STM32CubeIDE v1.16.0 and still works (YMMV). Connect ONLY the SCK, DIO and GND pins on the STLink V2 SWD interface. Connect the Black Pill via USB cable  to the host to supply 5V power.
 
 ## Build and flash  from Terminal 
-* The project is a bare bones Makefile project and includes a snapshot of startup, linker scripts, CMSIS and HAL code from STM32 F4 firmware library v1.28.0. You do not need to install this library unless you want to create your own F4xx projects using STM32CubeIDE. 
+* The project is a bare bones Makefile project and includes a snapshot of startup, linker script, CMSIS and HAL code from STM32 F4 firmware library v1.28.0. You do not need to install this library unless you want to create your own F4xx projects using STM32CubeIDE. 
 * Edit `Makefile` to
   * Select STM32F411 or STM32F401 MCU
-  * Enable MCLK output generation on STM32F411 (optional, for DACs that cannot generate MCK internally from the bit clock) 
+  * Enable MCLK output generation on STM32F411. This is optional, use this for DACs that cannot generate MCK internally from the bit clock.
   * Select PCM5102A or UDA1334ATS DAC
   * Enable diagnostic printout on serial UART port.
 * [Check this example](docs/example_build.txt) for the build steps :

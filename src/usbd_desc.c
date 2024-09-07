@@ -50,8 +50,13 @@
 #define USBD_PID                      0x1234 // random value
 #define USBD_LANGID_STRING            0x409
 #define USBD_MANUFACTURER_STRING      "STM32 Black Pill"
+#if defined(DAC_PCM5102A)
 #define USBD_PRODUCT_HS_STRING        "PCM5102A DAC"
 #define USBD_PRODUCT_FS_STRING        "PCM5102A DAC"
+#elif defined(DAC_UDA1334ATS)
+#define USBD_PRODUCT_HS_STRING        "UDA1334ATS DAC"
+#define USBD_PRODUCT_FS_STRING        "UDA1334ATS DAC"
+#endif
 #define USBD_CONFIGURATION_HS_STRING  "AUDIO Config"
 #define USBD_INTERFACE_HS_STRING      "AUDIO Interface"
 #define USBD_CONFIGURATION_FS_STRING  "AUDIO Config"
