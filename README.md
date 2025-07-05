@@ -40,18 +40,19 @@ with no distortion at higher volumes.
 * [Endpoint feedback](https://www.microchip.com/forums/m547546.aspx)
 
 # Software Development Environment
-* Ubuntu 22.04 AMDx64
-* STM32CubeIDE v1.16.0 (required only for toolchain binaries)
-* [STLink V2 tools](https://github.com/stlink-org/stlink/releases). Install the .deb package using `sudo apt install xxx.deb`. I used a cheap STLink V2 clone. It accepted a firmware upgrade from STM32CubeIDE v1.16.0 and still works (YMMV). Connect ONLY the SCK, DIO and GND pins on the STLink V2 SWD interface. Connect the Black Pill via USB cable  to the host to supply 5V power.
+* Ubuntu 24.04.2 LTS AMDx64
+* [STM32CubeIDE v1.18.1](https://www.st.com/en/development-tools/stm32cubeide.html).  This is only required for the compiler and build tool binaries. Download the Debian Linux Installer, extract the setup shell script and install using `sudo sh ./st-stm32cubeide_1.18.1_24813_20250409_2138_amd64.deb_bundle.sh`
+. The tools will be installed in `/opt/st/stm32cubeide_1.18.1`
+* [STLink V2 tools](https://github.com/stlink-org/stlink/releases). Install the .deb package using `sudo apt install xxx.deb`. I used a cheap STLink V2 clone. It accepted a firmware upgrade from STM32CubeIDE and still works (YMMV). Connect ONLY the SCK, DIO and GND pins on the STLink V2 interface to the Black Pill dev board. Connect the dev board via USB cable  to the PC to supply 5V power.
 
 ## Build and flash  from Terminal 
-* The project is a bare bones Makefile project and includes a snapshot of startup, linker script, CMSIS and HAL code from STM32 F4 firmware library v1.28.0. You do not need to install this library unless you want to create your own F4xx projects using STM32CubeIDE. 
+* The project is a bare bones Makefile project and includes a snapshot of startup, linker script, CMSIS and HAL code from STM32 F4 firmware library v1.28.0. You do not need to install this library unless you want to create your own F4xx projects using the STM32 Cube IDE. 
 * Edit `Makefile` to
-  * Select STM32F411 or STM32F401 MCU
-  * Enable MCLK output generation on STM32F411. This is optional, use this for DACs that cannot generate MCK internally from the bit clock.
-  * Select PCM5102A or UDA1334ATS DAC
+  * Select STM32F411 / STM32F401 MCU
+  * Select PCM5102A / UDA1334ATS DAC
+  * Optional enable of MCLK output generation on STM32F411. Not required for PCM5102A and UDA1334ATS DACS. Use this for DACs that cannot generate MCK internally from the bit clock.
   * Enable diagnostic printout on serial UART port.
-* [Check this example](docs/example_build.txt) for the build steps :
+* [See this example](docs/example_build.txt) for the build steps :
     * Add the paths to the toolchain binaries to your environment `PATH` variable. Installing STLink V2 tools should have already added the path to `st-flash`.
     * Run `make clean`, `make all`, `make flash` to build and flash the binary. 
 
